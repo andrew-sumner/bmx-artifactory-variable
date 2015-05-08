@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NZCustomsServiceExtension", "NZCustomsServiceExtension\NZCustomsServiceExtension.csproj", "{D822A85A-CBB6-4B24-9FCD-DFA4873D6173}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D4462DE3-93D5-4FC9-AA40-1D4B4258D03F}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{E2F1C873-F6C2-4825-A2FE-2C64B3760773}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{90BF0447-9A13-4271-BF27-D3C7F8CA071C}"
+	ProjectSection(SolutionItems) = preProject
+		Local.testsettings = Local.testsettings
+		NZCustomsServiceExtension.vsmdi = NZCustomsServiceExtension.vsmdi
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = NZCustomsServiceExtension.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D822A85A-CBB6-4B24-9FCD-DFA4873D6173}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D822A85A-CBB6-4B24-9FCD-DFA4873D6173}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D822A85A-CBB6-4B24-9FCD-DFA4873D6173}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D822A85A-CBB6-4B24-9FCD-DFA4873D6173}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2F1C873-F6C2-4825-A2FE-2C64B3760773}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2F1C873-F6C2-4825-A2FE-2C64B3760773}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2F1C873-F6C2-4825-A2FE-2C64B3760773}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(VaultVsipSolution-v2) = preSolution
+		VaultHost = http://inedoappsv1/VaultService
+		VaultRepositoryID = 10
+		VaultRepositoryGUID = 4ad214d2-6c2d-48e2-b90e-46c31af253cf
+		ProjectCount = 3
+		ProjectRelativeDiskPath1 = NZCustomsServiceExtension\NZCustomsServiceExtension.csproj
+		ProjectRelativeDiskPath2 = NZCustomsServiceExtension.sln
+		ProjectRelativeDiskPath3 = NZCustomsServiceExtension.sln
+	EndGlobalSection
+EndGlobal
