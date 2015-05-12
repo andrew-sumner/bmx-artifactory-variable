@@ -105,10 +105,11 @@ namespace NZCustomsServiceExtension.Actions
             };
 
             this.Controls.Add(
-                new SlimFormField("Artifactory Variable:", this.artifactoryVariable) { HelpText = "Choose a specific artifactory variable, or all artifactory variables in build scope."},
+                new SlimFormField("Artifactory Variable:", this.artifactoryVariable) { HelpText = "Choose a specific artifactory variable, or all artifactory variables in build scope." },
                 new SlimFormField("Dry Run:", this.dryRun) { HelpText = "Checking this option means that this action will only log what it would delete, unchecking it will cause the action to actually delete artifacts from Artifactory." },
-                new SlimFormField("Builds To Keep:", this.buildsToKeep) { HelpText = "Number of rejected builds to keep per envrionment, this allows reverting to a previous build." },
-                new SlimFormField("Builds To Keep in Final Envrionment:", this.buildsToKeepFinal) { HelpText = "Could be read as how many production releases should we keep in the archive." }
+                new SlimFormField("Builds To Keep"),
+                new SlimFormField("Per Envrionment:", this.buildsToKeep) { HelpText = "Number of rejected builds to keep per envrionment, this allows reverting to a previous build." },
+                new SlimFormField("Final Envrionment:", this.buildsToKeepFinal) { HelpText = "Could be read as how many production releases should we keep in the archive." }
             );
 
             this.artifactoryVariable.Items.Add(new ListItem("[All Artifactory Variables in Build Scope]", ALL_ARTIFACTORY_VARIABLES));

@@ -244,6 +244,8 @@ namespace NZCustomsServiceExtension.Actions
 
             if (variable.RepositoryPathRequiresExpanding())
             {
+                // TODO: It may be better to get the base folder and look at all child folders rather than rely on kept builds to 
+                //       give us the full list of folders
                 // Release builds are stored in a different folder per release
                 var releases = builds.Select(b => b.variableReleaseNameOrNumber).Distinct().OrderBy(b => b);
 
