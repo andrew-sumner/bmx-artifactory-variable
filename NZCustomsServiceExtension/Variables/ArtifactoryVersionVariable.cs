@@ -14,6 +14,7 @@ namespace NZCustomsServiceExtension.Variables
     using Inedo.BuildMaster.Data;
     using Inedo.BuildMaster.Extensibility.Variables;
     using Inedo.BuildMaster.Web;
+    using System;
 
     /// <summary>
     /// Artifactory build variable.  Allows selection of a specific build in Artifactory.
@@ -187,5 +188,58 @@ namespace NZCustomsServiceExtension.Variables
 
             return node.Value;
         }
+
+
+        /// <summary>
+        /// Create and populate ArtifactoryVersionVariable from settings in database for this application
+        /// </summary>
+        /// <param name="version">Version selected for the variable</param>
+        /// <returns>Artifactory path</returns>
+        public static ArtifactoryVersionVariable GetVariableDeclaration(int applicationId, string artifactoryVariableName)
+        {
+            // Get variable properties
+            var settings = StoredProcs
+                     .Variables_GetVariableDeclarations("B", applicationId, null)
+                     .Execute()
+                     .Where(s => s.Variable_Name == artifactoryVariableName)
+                     .FirstOrDefault()
+                     .Variable_Configuration;
+
+            XmlDocument xml = new XmlDocument();
+            xml.LoadXml(settings);
+
+            return new ArtifactoryVersionVariable
+            {
+                ActionServer = xml.SelectSingleNode("//Properties/@ActionServer").Value,
+                RepositoryPath = xml.SelectSingleNode("//Properties/@RepositoryPath").Value,
+                Filter = xml.SelectSingleNode("//Properties/@Filter").Value,
+                TrimFromPath = xml.SelectSingleNode("//Properties/@TrimFromPath").Value,
+                ReplaceSlashWithDot = bool.Parse(xml.SelectSingleNode("//Properties/@ReplaceSlashWithDot").Value),
+                DefaultToNotIncluded = bool.Parse(xml.SelectSingleNode("//Properties/@DefaultToNotIncluded").Value)
+            };
+        }
+
+        public static ArtifactVersion ExtractReleaseAndBuildNumbers(string version)
+        {
+            ArtifactVersion value = new ArtifactVersion();
+
+            int index = version.LastIndexOf('/');
+            if (index <= 0) index = version.LastIndexOf('.'); 
+
+            if (index > 0)
+            {
+                value.ReleaseNameOrNumber = version.Substring(0, index);
+                value.BuildNumber = version.Substring(index + 1);
+            }
+
+            return value;
+        }
+    }
+
+    public class ArtifactVersion
+    {
+        public String ReleaseNameOrNumber { get; set; }
+        public String BuildNumber { get; set; }
+
     }
 }

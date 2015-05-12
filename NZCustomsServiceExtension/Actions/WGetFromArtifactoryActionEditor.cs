@@ -94,29 +94,45 @@ namespace NZCustomsServiceExtension.Actions
             this.artifactoryServer = new ValidatingTextBox() { Width = 300 };
             this.repositoryPath = new ValidatingTextBox() { Width = 300, Required = true };
             this.acceptList = new ValidatingTextBox() { Width = 300 };
-            
+
             this.Controls.Add(
-                 new FormFieldGroup(
-                    "WGet",
-                    "The wget path and working directory are relative to the default directory.",
-                    false,
-                    new StandardFormField("WGet Path:", this.wgetPath),
-                    new StandardFormField(
-                        "Working Directory:",
-                        this.workingDirectory,
+                new SlimFormField("WGet Path:", this.wgetPath) { HelpText = "The wget path and working directory are relative to the default directory." },
+                new SlimFormField("Working Directory:", 
+                        this.workingDirectory, 
                         new RenderJQueryDocReadyDelegator(w =>
                         {
                             w.WriteLine(
                                 "$('#{0}').inedojq_defaulter();",
                                 this.workingDirectory.ClientID);
-                        }))),
-                new FormFieldGroup(
-                    "Artifactory",
-                    "If server not populated then the server defined for the Artifactory extension will be used.<br><br>The repository path is the folder or file to download excluding artifactory server url.<br><br>The accept list can contain a comma-separated list of accepted file extensions to download.",
-                    false,
-                    new StandardFormField("Server:", this.artifactoryServer),
-                    new StandardFormField("Repository Path:", this.repositoryPath),
-                    new StandardFormField("Accept List:", this.acceptList)));
+                        }))
+                        { HelpText = "The name of the artifactory variable - requires that you have defined a build scoped Artifactory variable." },
+                new SlimFormField("Artifactory Server:", this.artifactoryServer) { HelpText = "If server not populated then the server defined for the Artifactory extension will be used." },
+                new SlimFormField("Repository Path:", this.repositoryPath) { HelpText = "The repository path is the folder or file to download excluding artifactory server url." },
+                new SlimFormField("Accept List:", this.acceptList) { HelpText = "The accept list can contain a comma-separated list of accepted file extensions to download." }
+            );
+
+            //this.Controls.Add(
+            //     new FormFieldGroup(
+            //        "WGet",
+            //        "The wget path and working directory are relative to the default directory.",
+            //        false,
+            //        new StandardFormField("WGet Path:", this.wgetPath),
+            //        new StandardFormField(
+            //            "Working Directory:",
+            //            this.workingDirectory,
+            //            new RenderJQueryDocReadyDelegator(w =>
+            //            {
+            //                w.WriteLine(
+            //                    "$('#{0}').inedojq_defaulter();",
+            //                    this.workingDirectory.ClientID);
+            //            }))),
+            //    new FormFieldGroup(
+            //        "Artifactory",
+            //        "If server not populated then the server defined for the Artifactory extension will be used.<br><br>The repository path is the folder or file to download excluding artifactory server url.<br><br>The accept list can contain a comma-separated list of accepted file extensions to download.",
+            //        false,
+            //        new StandardFormField("Server:", this.artifactoryServer),
+            //        new StandardFormField("Repository Path:", this.repositoryPath),
+            //        new StandardFormField("Accept List:", this.acceptList)));
         } 
     }
 }

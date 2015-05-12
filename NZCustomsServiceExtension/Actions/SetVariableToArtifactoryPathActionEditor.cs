@@ -15,7 +15,7 @@ namespace NZCustomsServiceExtension.Actions
     using Inedo.Web.Controls;
     
     /// <summary>
-    /// Editor for WGetFromArtifactoryAction
+    /// Editor for <see cref="SetVariableToArtifactoryPathAction"/> 
     /// </summary>
     public sealed class SetVariableToArtifactoryPathActionEditor : ActionEditorBase
     {
@@ -71,20 +71,24 @@ namespace NZCustomsServiceExtension.Actions
         {
             this.variableName = new ValidatingTextBox() { Width = 300, Required = true };
             this.artifactoryVariable = new DropDownList { Width = 300 };
-            
-            this.Controls.Add(
-                 new FormFieldGroup(
-                    "Variable Name",
-                    "The name of the variable.",
-                    false,
-                    new StandardFormField("Name:", this.variableName)),
-                new FormFieldGroup(
-                    "Artifactory Variable",
-                    "The name of the artifactory variable.",
-                    false,
-                    new StandardFormField("Name:", this.artifactoryVariable)));
 
-            // TODO: Should this be in a Setter?
+            this.Controls.Add(
+                new SlimFormField("Name:", this.variableName) { HelpText = "The name of the variable." },
+                new SlimFormField("Variable:", this.artifactoryVariable) { HelpText = "The name of the artifactory variable - requires that you have defined a build scoped Artifactory variable." }
+            );
+
+            //this.Controls.Add(
+            //     new FormFieldGroup(
+            //        "Variable Name",
+            //        "The name of the variable.",
+            //        false,
+            //        new StandardFormField("Name:", this.variableName)),
+            //    new FormFieldGroup(
+            //        "Artifactory Variable",
+            //        "The name of the artifactory variable.",
+            //        false,
+            //        new StandardFormField("Name:", this.artifactoryVariable)));
+
             this.artifactoryVariable.Items.Add(new ListItem(string.Empty));
 
             this.artifactoryVariable.Items.AddRange(StoredProcs

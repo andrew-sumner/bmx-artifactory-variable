@@ -13,6 +13,7 @@ namespace NZCustomsServiceExtension.Actions
     using Inedo.BuildMaster.Data;
     using Inedo.BuildMaster.Extensibility.Actions;
     using Inedo.BuildMaster.Web;
+    using System.ComponentModel;
     using System.Web.UI.WebControls;
     using System.Collections;
     using System.Collections.Generic;
@@ -24,13 +25,13 @@ namespace NZCustomsServiceExtension.Actions
     /// Populates a variable with the value path to a build in artifactory chosen in selected artifactory variable
     /// </summary>
     [ActionProperties(
-        "Cleanup artifacts in Artifiactory", "Deletes artifacts in artifactory for the selected artifactory variable.")]
+        "Cleanup Artifacts in Artifiactory", "Deletes artifacts in artifactory for the selected artifactory variable.")]
     [Tag("NZCustomsService")]
     [CustomEditor(typeof(CleanupArtifactoryActionEditor))] 
     public class CleanupArtifactoryAction : ActionBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SetVariableToArtifactoryPathAction"/> class.
+        /// Initializes a new instance of the <see cref="CleanupArtifactoryAction"/> class.
         /// </summary>
         public CleanupArtifactoryAction()
         {   
@@ -46,7 +47,22 @@ namespace NZCustomsServiceExtension.Actions
         /// Set true to only report on what artifacts would be deleted from Artifactory, false to delete artifacts.
         /// </summary>
         [Persistent]
+        //[DefaultValue(true)]
         public bool DryRun { get; set; }
+
+        /// <summary>
+        /// The number of rejected builds to keep per environment.
+        /// </summary>
+        [Persistent]
+        //[DefaultValue(5)]
+        public int BuildsToKeep { get; set; }
+
+        /// <summary>
+        /// The number of rejected builds to keep in the final environment (ie those deployed to production).
+        /// </summary>
+        [Persistent]
+        //[DefaultValue(15)]
+        public int BuildsToKeepFinal { get; set; }
 
         /// <summary>
         /// Returns a string displayed in the BuildMaster deployment plan
@@ -64,46 +80,55 @@ namespace NZCustomsServiceExtension.Actions
         /// </summary>
         protected override void Execute()
         {
-            try
+            if (this.BuildsToKeep == 0)
             {
-                if (ArtifactoryVariable.Equals(CleanupArtifactoryActionEditor.ALL_ARTIFACTORY_VARIABLES))
+                this.LogInformation("BuildsToKeep has been set to zero, defaulting to 5");
+                this.BuildsToKeep = 5;
+            }
+
+            if (this.BuildsToKeepFinal == 0)
+            {
+                this.LogInformation("BuildsToKeepFinal has been set to zero, defaulting to 15");
+                this.BuildsToKeepFinal = 15;
+            }
+
+            if (ArtifactoryVariable.Equals(CleanupArtifactoryActionEditor.ALL_ARTIFACTORY_VARIABLES))
+            {
+                this.LogInformation("Cleaning up artifacts from Artifactory for all Artifactory Build Variables that have been created for this application and have a scope of Build.");
+                ListItem[] variables = CleanupArtifactoryActionEditor.GetVariables(this.Context.ApplicationId);
+                foreach (var item in variables)
                 {
-                    this.LogInformation("Cleaning up artifacts from Artifactory for all Artifactory Build Variables that have been created for this application and have a scope of Build.");
-                    ListItem[] variables = CleanupArtifactoryActionEditor.GetVariables(this.Context.ApplicationId);
-                    foreach (var item in variables)
-                    {
-                        CleanupArtifacts(item.Value);
-                        
-                    }
-                }
-                else
-                {
-                    CleanupArtifacts(ArtifactoryVariable);
+                    CleanupArtifacts(item.Value);
+
                 }
             }
-            catch (Exception ex)
+            else
             {
-                this.LogError(ex.Message);
+                CleanupArtifacts(ArtifactoryVariable);
             }
         }
 
         private void CleanupArtifacts(string ArtifactoryVariable)
         {
-            // TODO remove this line
-            DryRun = true;
+            this.LogInformation("Gather variable usage from BuildMaster for Artifactory Build Variable {0}", ArtifactoryVariable);
 
-            this.LogInformation("Cleanup artifacts from Artifactory for Artifactory Build Variable " + ArtifactoryVariable);
-                    
+            List<BuildInfo> builds = GetBuildMasterBuildsToKeep(ArtifactoryVariable);
+            DeleteArtifactsFromArtifactory(ArtifactoryVariable, builds);
+        }
+
+        private List<BuildInfo> GetBuildMasterBuildsToKeep(string ArtifactoryVariable)
+        {
             List<BuildInfo> builds = new List<BuildInfo>();
-            ArtifactoryVersionVariable variable = GetArtifactoryVersionVariableDeclaration(ArtifactoryVariable);
-
+            
             // 1. Get List of all envrionment for this Application
             //    NOTE: To get these in correct order order we have to query the workflows instead of calling getEnvironments()
             var workflows = StoredProcs.Workflows_GetWorkflows(Application_Id: this.Context.ApplicationId).Execute();
+            bool checkRunningExecutions = true;
 
             foreach (var workflowItem in workflows)
             {
-                this.LogInformation(String.Format("Application: {0} - {1}", workflowItem.Single_Application_Id, workflowItem.Single_Application_Name));
+                this.LogDebug("Application: {0} - {1}", workflowItem.Single_Application_Id, workflowItem.Single_Application_Name);
+                this.LogDebug("Workflow: {0} - {1}", workflowItem.Workflow_Id, workflowItem.Workflow_Name);
 
                 var workflow = StoredProcs.Workflows_GetWorkflow(Workflow_Id: workflowItem.Workflow_Id).Execute();
 
@@ -111,14 +136,24 @@ namespace NZCustomsServiceExtension.Actions
                 //    NOTE: A build may get reapplied to the same envrionment several times to repair a failed deployment. Treat these as one.
                 foreach (var step in workflow.WorkflowSteps_Extended)
                 {
-                    int keep = (step.Environment_Name.Equals(workflow.WorkflowSteps_Extended.Last().Environment_Name) ? 10 : 5);
-		            int unique = 0;
+                    int keep = (step.Environment_Name == workflow.WorkflowSteps_Extended.Last().Environment_Name ? this.BuildsToKeepFinal : this.BuildsToKeep);
 
-                    var executions = StoredProcs.Builds_GetExecutions(Application_Id: this.Context.ApplicationId, Release_Number: null, 
-                                Build_Number: null, Environment_Id: step.Environment_Id, Execution_Count: keep).Execute();
+                    this.LogDebug("Keep: {0} builds in environment '{1}'", keep, step.Environment_Name);
+
+                    var executions = StoredProcs.Builds_GetExecutions(Application_Id: this.Context.ApplicationId, Release_Number: null,
+                                Build_Number: null, Environment_Id: step.Environment_Id, Execution_Count: keep * 3).Execute();
+
+
+                    if (checkRunningExecutions)
+                    {
+                        // Get any variables declared in the execution of the current build
+                        var runningExecutions = StoredProcs.Builds_GetExecutionsInProgress(this.Context.ApplicationId).Execute();
+                        executions = runningExecutions.Concat(executions);
+                        checkRunningExecutions = false;
+                    }
 
                     foreach (var execution in executions)
-	                {
+                    {
                         var variableValue = StoredProcs.Variables_GetVariableValues(
                                                 Environment_Id: execution.Environment_Id,
                                                 Server_Id: null,
@@ -131,143 +166,200 @@ namespace NZCustomsServiceExtension.Actions
                                             .Execute()
                                             .Where(v => v.Variable_Name.Equals(ArtifactoryVariable))
                                             .FirstOrDefault();
-                        
-                        if (variableValue != null) {
-				            this.LogInformation(String.Format("\tWorkflow: {0} - {1}", workflowItem.Workflow_Id), workflowItem.Workflow_Name);
-				            this.LogInformation(String.Format("\tEnvironment: {0} - {1}", step.Environment_Id, step.Environment_Name));
-				            this.LogInformation(String.Format("\tExecution: Version = {0}.{1}, Date = {2}", execution.Release_Number, execution.Build_Number, execution.ExecutionStart_Date));
-                            this.LogInformation(String.Format("\tVariable: {0} = '{1}'", variableValue.Variable_Name, variableValue.Value_Text));
-				
-				            if (executions.FirstOrDefault(it => it.Release_Number == execution.Release_Number && it.Build_Number == execution.Build_Number && it.Execution_Id > execution.Execution_Id) != null) {
-					            // same build has been deployed to this enviornment more than once, skip this one
-					            this.LogInformation("\tResult: Repeated build, skip");
-				            } else {
-					            unique ++;
-					            if (unique <= keep) {
-						            if (builds.FirstOrDefault(it => it.releaseNumber == execution.Release_Number && it.buildNumber == execution.Build_Number) == null) {
+
+                        if (variableValue != null && !String.IsNullOrEmpty(variableValue.Value_Text))
+                        {
+                            ArtifactVersion version = ArtifactoryVersionVariable.ExtractReleaseAndBuildNumbers(variableValue.Value_Text);
+                            string result = String.Empty;
+
+                            if (executions.FirstOrDefault(it => it.Release_Number == execution.Release_Number && it.Build_Number == execution.Build_Number && it.Execution_Id > execution.Execution_Id) != null)
+                            {
+                                // same build has been deployed to this enviornment more than once, skip this one
+                                result = "Repeated execution, skip";
+                            }
+                            else
+                            {
+                                if (builds.Count() <= keep)
+                                {
+                                    if (builds.FirstOrDefault(bld => bld.variableReleaseNameOrNumber == version.ReleaseNameOrNumber && bld.variableBuildNumber == version.BuildNumber) == null)
+                                    {
                                         var buildInfo = new BuildInfo();
-									
-							            buildInfo.variableValue = variableValue.Value_Text;
-							            buildInfo.releaseNumber = execution.Release_Number;
-                                        buildInfo.releaseName = execution.Release_Name;
-							            buildInfo.buildNumber = execution.Build_Number;
-							            buildInfo.buildStatus = execution.BuildStatus_Name;
-							            buildInfo.executionStatus = execution.ExecutionStatus_Name;
-							
-							            builds.Add(buildInfo);
-							
-							            this.LogInformation("\tResult: Keep");
-						            } else {
-							            this.LogInformation("\tResult: Already stored, ignore");
-						            }
-					            } else {
-						            this.LogInformation("\tResult: Discard");
-					            }
-				            }				
-			            } else {
-				            this.LogWarning(String.Format("Variable '{0}' was not found", ArtifactoryVariable));
-			            }
-	                }
+
+                                        buildInfo.variableValue = variableValue.Value_Text;
+                                        buildInfo.variableReleaseNameOrNumber = version.ReleaseNameOrNumber;
+                                        buildInfo.variableBuildNumber = version.BuildNumber;
+
+                                        //buildInfo.releaseNumber = execution.Release_Number;
+                                        //buildInfo.releaseName = execution.Release_Name;
+                                        //buildInfo.buildNumber = execution.Build_Number;
+                                        //buildInfo.buildStatus = execution.BuildStatus_Name;
+                                        //buildInfo.executionStatus = execution.ExecutionStatus_Name;
+
+                                        builds.Add(buildInfo);
+
+                                        result = "Keep";
+                                    }
+                                    else
+                                    {
+                                        result = "Already keeping";
+                                    }
+                                }
+                                else
+                                {
+                                    result = "Discard, we've kept all we want";
+                                }
+                            }
+
+                            this.LogDebug("\tVariable {0}='{1}': {2}. Artifactory Release {3} Build {4}, BuildMaster Release {5}, Build {6}",
+                                    variableValue.Variable_Name, variableValue.Value_Text, result,
+                                    version.ReleaseNameOrNumber, version.BuildNumber, execution.Release_Number, execution.Build_Number);
+                        }
+                        else
+                        {
+                            this.LogDebug("\tVariable '{0}' was not found for Release {1} Build {2}", ArtifactoryVariable, execution.Release_Number, execution.Build_Number);
+                        }
+
+                        // Found all the builds we need for this environment, move on to the next
+                        if (builds.Count() >= keep)
+                        {
+                            break;                            
+                        }
+                    }
                 }
             }
-                        
+
+            return builds;
+        }
+
+        private void DeleteArtifactsFromArtifactory(string ArtifactoryVariable, List<BuildInfo> builds)
+        {
+            ArtifactoryVersionVariable variable = ArtifactoryVersionVariable.GetVariableDeclaration(this.Context.ApplicationId, ArtifactoryVariable);
+
             // 3. Get a list of folders from Artifactory for our application and for each folder returned:
             //      check its in our keep list, if not delete it - but do not delete the newest (last) folder 
             //      from artifactory as it may not have had a chance to build yet!
+            this.LogInformation("{0} artifacts from Artifactory for Artifactory Build Variable {1}", this.DryRun ? "Perform a dry run of the cleanup of" : "Cleanup", ArtifactoryVariable);
+
             int numberRemoved = 0;
 
-            if (variable.RepositoryPathRequiresExpanding()) 
+            if (variable.RepositoryPathRequiresExpanding())
             {
                 // Release builds are stored in a different folder per release
-                var releases = builds.Select(b => new {b.releaseNumber, b.releaseName}).Distinct().OrderBy(b => b.releaseNumber);
+                var releases = builds.Select(b => b.variableReleaseNameOrNumber).Distinct().OrderBy(b => b);
 
                 foreach (var release in releases)
-	            {
-                    numberRemoved += DeleteFromArtifactory(builds, variable, release.releaseNumber, release.releaseName);
+                {
+                    numberRemoved += DeleteFromArtifactory(builds, variable, release);
                 }
-            } else {
+            }
+            else
+            {
                 // All builds, regardless of release are stored in the same folder
-                numberRemoved += DeleteFromArtifactory(builds, variable, String.Empty, String.Empty);
+                numberRemoved += DeleteFromArtifactory(builds, variable, String.Empty);
             }
 
             this.LogInformation("");
-            this.LogInformation(String.Format("{0} folders {1} removed from Artifactory", numberRemoved, (this.DryRun ? "would have been" : "were")));
+            this.LogInformation("{0} folders {1} removed from Artifactory", numberRemoved, (this.DryRun ? "would have been" : "were"));
         }
 
-        private int DeleteFromArtifactory(List<BuildInfo> builds, ArtifactoryVersionVariable variable, string releaseNumber, string releaseName)
+        private int DeleteFromArtifactory(List<BuildInfo> builds, ArtifactoryVersionVariable variable, string releaseNameOrNumber)
         {
             int numberRemoved = 0;
 
             ArtifactoryApi artifactory = new ArtifactoryApi(variable.GetBaseURL());
-            FolderInfo folderInfo = artifactory.GetFolderInfo(variable.ExpandRepositoryPath(releaseNumber, releaseName));
+            FolderInfo folderInfo = artifactory.GetFolderInfo(variable.ExpandRepositoryPath(releaseNameOrNumber, releaseNameOrNumber));
 
             foreach (var child in folderInfo.Children)
-	        {
-		        if(child.Folder) {
-		            var artifactoryVersion = child.Uri.StartsWith("/") ? child.Uri.Substring(1) : child.Uri;
-		
-		            this.LogInformation(String.Format("Artifactory Version: {0}", artifactoryVersion));
-		
-		            if (child == folderInfo.Children.Last()) {
-			            this.LogInformation(String.Format("\tKeep Newest Version: {0} in Artifactory", artifactoryVersion));
-		            } else {
-			            int index = artifactoryVersion.LastIndexOf('.');
-			            string artifactoryReleaseNumber = artifactoryVersion.Substring(0, index);
-			            string artifactoryBuildNumber = artifactoryVersion.Substring(index + 1);
-			
-			            if (builds.Find(it => it.variableValue == artifactoryVersion) == null) {
-				            this.LogInformation(String.Format("\tDelete Version: {0} from Artifactory", artifactoryVersion));
-                            if(!this.DryRun) 
-                            {
-				                artifactory.DeleteItem(folderInfo.Uri + child.Uri);
-                            }
-				            numberRemoved ++;			
-			            } else {
-				            this.LogInformation(String.Format("\tKeep Version: {0} in Artifactory", artifactoryVersion));
-			            }
-		            }
-	            }
+            {
+                if (child.Folder)
+                {
+                    ArtifactVersion artifactoryVersion = ExtractArtifactoryVersion(folderInfo.Path, child.Uri);
+
+                    string result = String.Empty;
+                    bool delete = false;
+
+                    // TODO: Ensure this is the last, not convinced artifactory is ordering builds or what will happen for multiple active releases
+                    // Could sort by number, date or just keep any builds less than a day old
+                    // TODO: Haven't tested with builds that seperated into different releases folders, rather than placed in big bucket
+                    if (builds.Find(bld => bld.variableReleaseNameOrNumber == artifactoryVersion.ReleaseNameOrNumber && 
+                                            bld.variableBuildNumber == artifactoryVersion.BuildNumber) != null)
+                    {
+                        result = "Keep as is used by BuildMaster";
+                    }
+                    else if (child == folderInfo.Children.Last())
+                    {
+                        result = "Keep as is newest build in Artifactory and may be required";
+                    }
+                    else
+                    {
+                        result = "Delete as BuildMaster has no use for it";
+                        delete = true;
+                    }
+                    
+                    this.LogDebug("Artifactory Release: {0} Build {1} {2} - Path: {3} Child {4}", artifactoryVersion.ReleaseNameOrNumber, artifactoryVersion.BuildNumber, result, folderInfo.Path, child.Uri);
+                    if (delete)
+                    {
+                        if (!this.DryRun)
+                        {
+                            artifactory.DeleteItem(folderInfo.Uri + child.Uri);
+                        }
+                        numberRemoved++;
+                    }
+                }
             }
-            
+
             return numberRemoved;
         }
 
-        /// <summary>
-        /// Create and populate ArtifactoryVersionVariable from settings in database for this application
-        /// </summary>
-        /// <param name="version">Version selected for the variable</param>
-        /// <returns>Artifactory path</returns>
-        private ArtifactoryVersionVariable GetArtifactoryVersionVariableDeclaration(string artifactoryVariableName)
-        {   
-            // Get variable properties
-            var settings = StoredProcs
-                     .Variables_GetVariableDeclarations("B", this.Context.ApplicationId, null)
-                     .Execute()
-                     .Where(s => s.Variable_Name == artifactoryVariableName)
-                     .FirstOrDefault()
-                     .Variable_Configuration;
+        private ArtifactVersion ExtractArtifactoryVersion(string parentFolder, string childFolder)
+        {
+            parentFolder = RemoveSlashes(parentFolder);
+            childFolder = RemoveSlashes(childFolder);
 
-            XmlDocument xml = new XmlDocument();
-            xml.LoadXml(settings);
-
-            return new ArtifactoryVersionVariable
+            if (childFolder.Contains(".") || childFolder.Contains("/"))
             {
-                ActionServer = xml.SelectSingleNode("//Properties/@ActionServer").Value,
-                RepositoryPath = xml.SelectSingleNode("//Properties/@RepositoryPath").Value,
-                Filter = xml.SelectSingleNode("//Properties/@Filter").Value,
-                TrimFromPath = xml.SelectSingleNode("//Properties/@TrimFromPath").Value,
-                ReplaceSlashWithDot = bool.Parse(xml.SelectSingleNode("//Properties/@ReplaceSlashWithDot").Value),
-                DefaultToNotIncluded = bool.Parse(xml.SelectSingleNode("//Properties/@DefaultToNotIncluded").Value)
-            };
+                // Assume childFolder contains both release and build details
+                return ArtifactoryVersionVariable.ExtractReleaseAndBuildNumbers(childFolder);
+            }
+
+            // Assume childFolder contains build details only and parentFolder has release details
+            ArtifactVersion value = new ArtifactVersion();
+
+            int index = parentFolder.LastIndexOf("/");
+
+            if (index > 0)
+            {
+                value.ReleaseNameOrNumber = parentFolder.Substring(index + 1);
+            }
+            else
+            {
+                value.ReleaseNameOrNumber = parentFolder;
+            }
+
+            value.BuildNumber = childFolder;
+        
+            return value;
+        }
+
+        private string RemoveSlashes(string value)
+        {
+            if (value.StartsWith("/")) value = value.Substring(1);
+            if (value.EndsWith("/")) value = value.Substring(0, value.Length - 1);
+
+            return value;
         }
     }
 
-    protected class BuildInfo {
-	    public String variableValue { get; set; }
-        public String releaseNumber { get; set; }
-        public String releaseName { get; set; }
-        public String buildNumber { get; set; }
-        public String buildStatus { get; set; }
-        public String executionStatus { get; set; }
+    public class BuildInfo
+    {
+        public String variableValue { get; set; }
+        public String variableReleaseNameOrNumber { get; set; }
+        public String variableBuildNumber { get; set; }
+        
+        //public String releaseNumber { get; set; }
+        //public String releaseName { get; set; }
+        //public String buildNumber { get; set; }
+        //public String buildStatus { get; set; }
+        //public String executionStatus { get; set; }
     }
 }
