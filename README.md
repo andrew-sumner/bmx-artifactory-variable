@@ -1,7 +1,12 @@
 # bmx-artifactory-variable
-A means of selecting specific application artifacts built and stored in Artifactory by another tool such as Jenkins.
+A means of selecting specific application artifacts built and stored in Artifactory by another tool such as Jenkins.  Also has an action to delete unused artifacts from Artifactory. 
 
 # Screenshots
-[Configuration!](Images/configure_variable.png)
+## Create Variable (Configuration Screen)
+![Create Variable](Images/configure_variable.png)
 
-[Create Build!](Images/create_build.png)
+## Variable in Action (Create New Build)
+![Create New Build](Images/create_build.png)
+
+## Cleanup Artifacts from Artifactory (Configuration Screen)
+![Cleanup Artifacts from Artifactory](Images/cleanup_artifacts.png)
