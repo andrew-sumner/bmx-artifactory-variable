@@ -10,3 +10,8 @@ A means of selecting specific application artifacts built and stored in Artifact
 
 ## Cleanup Artifacts from Artifactory (Configuration Screen)
 ![Cleanup Artifacts from Artifactory](Images/cleanup_artifacts.png)
+
+## Ensure Version Has Been Selected (Action Group Predicate)
+![Action Group Predicate](Images/action_group_predicate.png)
+
+
