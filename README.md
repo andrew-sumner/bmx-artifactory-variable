@@ -12,6 +12,7 @@ A means of selecting specific application artifacts built and stored in Artifact
 ![Cleanup Artifacts from Artifactory](Images/cleanup_artifacts.png)
 
 ## Ensure Version Has Been Selected (Action Group Predicate)
+I did have a custom predicate for doing this, but it got broken at some point and commented out...
 ![Action Group Predicate](Images/action_group_predicate.png)
 
 
