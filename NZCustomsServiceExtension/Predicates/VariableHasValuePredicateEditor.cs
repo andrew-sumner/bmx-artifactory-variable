@@ -3,7 +3,6 @@
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
-/*
 namespace NZCustomsServiceExtension.Predicates
 {
     using System.Web.UI.WebControls;
@@ -15,6 +14,7 @@ namespace NZCustomsServiceExtension.Predicates
     using Inedo.BuildMaster.Web.Controls;
     using Inedo.BuildMaster.Web.Controls.Extensions;
     using Inedo.Web.Controls;
+    using NZCustomsServiceExtension.Variables;
 
     /// <summary>
     /// Predicate editor.
@@ -24,7 +24,7 @@ namespace NZCustomsServiceExtension.Predicates
         /// <summary>
         /// Variable name text box
         /// </summary>
-        private ValidatingTextBox variableName;
+        private DropDownList variableName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VariableHasValuePredicateEditor"/> class.
@@ -64,24 +64,31 @@ namespace NZCustomsServiceExtension.Predicates
         /// </summary>
         protected override void CreateChildControls()
         {
-            this.variableName = new ValidatingTextBox
-            {
-                Required = true,
-                TextMode = TextBoxMode.SingleLine,
-                Width = 250,
-                Rows = 1
-            };
+            //this.variableName = new ValidatingTextBox
+            //{
+            //    Required = true,
+            //    TextMode = TextBoxMode.SingleLine,
+            //    Width = 250,
+            //    Rows = 1
+            //};
 
+            //this.Controls.Add(
+            //    new FormFieldGroup(
+            //        "Options",
+            //        "Select variable.",
+            //        false,
+            //        new StandardFormField(string.Empty, this.variableName))
+            //    {
+            //        Narrow = true
+            //    });
+
+            this.variableName = new DropDownList { Width = 300 };
+            
             this.Controls.Add(
-                new FormFieldGroup(
-                    "Options",
-                    "Select variable.",
-                    false,
-                    new StandardFormField(string.Empty, this.variableName))
-                {
-                    Narrow = true
-                });
+                new SlimFormField("Variable:", this.variableName) { HelpText = "The name of the artifactory variable - requires that you have defined a build scoped Artifactory variable." }
+            );
+
+            this.variableName.Items.AddRange(ArtifactoryVersionVariable.GetArtifactoryVariablesInBuildScope(ArtifactoryVersionVariableSetter.GetApplicationIdFromUrl()));
         }
     }
 }
-*/

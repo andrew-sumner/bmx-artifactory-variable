@@ -104,7 +104,7 @@ namespace NZCustomsServiceExtension.Variables
         /// Extract the application id from the URL
         /// </summary>
         /// <returns>Application Id</returns>
-        private static int GetApplicationIdFromUrl()
+        public static int GetApplicationIdFromUrl()
         {   
             int applicationId = 0;
             string url = HttpContext.Current.Request.Url.AbsolutePath;

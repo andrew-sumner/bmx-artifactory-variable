@@ -3,7 +3,6 @@
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
-/*
 namespace NZCustomsServiceExtension.Predicates
 {
     using Inedo.BuildMaster;
@@ -59,4 +58,3 @@ namespace NZCustomsServiceExtension.Predicates
         }
     }
 }
-*/

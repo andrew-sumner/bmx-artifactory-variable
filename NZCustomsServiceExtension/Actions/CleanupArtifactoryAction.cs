@@ -95,7 +95,7 @@ namespace NZCustomsServiceExtension.Actions
             if (ArtifactoryVariable.Equals(CleanupArtifactoryActionEditor.ALL_ARTIFACTORY_VARIABLES))
             {
                 this.LogInformation("Cleaning up artifacts from Artifactory for all Artifactory Build Variables that have been created for this application and have a scope of Build.");
-                ListItem[] variables = CleanupArtifactoryActionEditor.GetVariables(this.Context.ApplicationId);
+                ListItem[] variables = ArtifactoryVersionVariable.GetArtifactoryVariablesInBuildScope(this.Context.ApplicationId);
                 foreach (var item in variables)
                 {
                     CleanupArtifacts(item.Value);

@@ -15,6 +15,7 @@ namespace NZCustomsServiceExtension.Actions
     using Inedo.Web.Controls;
     using System.Web.UI;
     using System;
+    using NZCustomsServiceExtension.Variables;
         
     /// <summary>
     /// Editor for <see cref="CleanupArtifactoryAction"/> 
@@ -113,17 +114,7 @@ namespace NZCustomsServiceExtension.Actions
             );
 
             this.artifactoryVariable.Items.Add(new ListItem("[All Artifactory Variables in Build Scope]", ALL_ARTIFACTORY_VARIABLES));
-            this.artifactoryVariable.Items.AddRange(GetVariables(this.ApplicationId));
-        }
-
-        public static ListItem[] GetVariables(int ApplicationId)
-        {
-            return StoredProcs
-                    .Variables_GetVariableDeclarations("B", ApplicationId, null)
-                    .Execute()
-                    .Where(s => s.Variable_Configuration.Contains("NZCustomsServiceExtension.Variables.ArtifactoryVersionVariable"))
-                    .Select(s => new ListItem(s.Variable_Name))
-                    .ToArray();
+            this.artifactoryVariable.Items.AddRange(ArtifactoryVersionVariable.GetArtifactoryVariablesInBuildScope(this.ApplicationId));
         }
     }
 }

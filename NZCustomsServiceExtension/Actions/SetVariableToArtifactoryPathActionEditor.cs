@@ -13,6 +13,7 @@ namespace NZCustomsServiceExtension.Actions
     using Inedo.BuildMaster.Web.Controls;
     using Inedo.BuildMaster.Web.Controls.Extensions;
     using Inedo.Web.Controls;
+    using NZCustomsServiceExtension.Variables;
     
     /// <summary>
     /// Editor for <see cref="SetVariableToArtifactoryPathAction"/> 
@@ -91,12 +92,7 @@ namespace NZCustomsServiceExtension.Actions
 
             this.artifactoryVariable.Items.Add(new ListItem(string.Empty));
 
-            this.artifactoryVariable.Items.AddRange(StoredProcs
-                    .Variables_GetVariableDeclarations("B", this.ApplicationId, null)
-                    .Execute()
-                    .Where(s => s.Variable_Configuration.Contains("NZCustomsServiceExtension.Variables.ArtifactoryVersionVariable"))
-                    .Select(s => new ListItem(s.Variable_Name))
-                    .ToArray());
+            this.artifactoryVariable.Items.AddRange(ArtifactoryVersionVariable.GetArtifactoryVariablesInBuildScope(this.ApplicationId));
         } 
     }
 }
