@@ -37,6 +37,14 @@ namespace NZCustomsServiceExtension.Actions
         {   
         }
 
+        protected ArtifactoryConfigurer Configurer
+        {
+            get
+            {
+                return this.GetExtensionConfigurer() as ArtifactoryConfigurer;
+            }
+        }
+
         /// <summary>
         /// Gets or sets string to find in value
         /// </summary>
@@ -268,7 +276,7 @@ namespace NZCustomsServiceExtension.Actions
         {
             int numberRemoved = 0;
 
-            ArtifactoryApi artifactory = new ArtifactoryApi(variable.GetBaseURL());
+            ArtifactoryApi artifactory = new ArtifactoryApi(this.Configurer);
             FolderInfo folderInfo = artifactory.GetFolderInfo(variable.ExpandRepositoryPath(releaseNameOrNumber, releaseNameOrNumber));
 
             foreach (var child in folderInfo.Children)

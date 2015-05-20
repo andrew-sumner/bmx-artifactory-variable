@@ -12,18 +12,19 @@ namespace NZCustomsServiceExtension.Artifactory
     {
         private RestClient client;
 
-        public ArtifactoryApi(String baseUrl)
+        public ArtifactoryApi(String server)
         {
-            this.client = new RestClient(baseUrl);
+            this.client = new RestClient(server);
         }
 
-        public ArtifactoryApi(String baseUrl, String username, String password)
+        public ArtifactoryApi(ArtifactoryConfigurer configurer)
         {
-            this.client = new RestClient(baseUrl);
-            this.client.Authenticator = new HttpBasicAuthenticator(username, password);
+            this.client = new RestClient(configurer.Server);
 
-            //username: admin
-    	    //password: password
+            if (!String.IsNullOrEmpty(configurer.Username) && !String.IsNullOrEmpty(configurer.Password))
+            {
+                this.client.Authenticator = new HttpBasicAuthenticator(configurer.Username, configurer.Password);
+            }
         }
 
         /**

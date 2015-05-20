@@ -167,7 +167,8 @@ namespace NZCustomsServiceExtension.Variables
 
             try
             {
-                ArtifactoryApi artifactory = new ArtifactoryApi(variable.GetBaseURL());
+                //TODO How get the extension configurer within setter rather than action?
+                ArtifactoryApi artifactory = new ArtifactoryApi(ArtifactoryVersionVariable.GetArtifactoryConfigurerUrl());
                 folderInfo = artifactory.GetFolderInfo(repositoryPath);
             }
             catch (Exception ex)

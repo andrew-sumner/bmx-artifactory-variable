@@ -88,7 +88,7 @@ namespace NZCustomsServiceExtension.Variables
             }
             else
             {
-                url = this.GetArtifactoryExtensionArtifactoryUrl();
+                url = GetArtifactoryConfigurerUrl();
             }
 
             if (url.EndsWith("/"))
@@ -167,13 +167,38 @@ namespace NZCustomsServiceExtension.Variables
             return trimFromPath;
         }
 
+        ///// <summary>
+        ///// Gets the server name from the XML returned by the ExtensionConfiguration_GetConfiguration call for the Artifactory extension
+        ///// </summary>
+        //private string GetArtifactoryExtensionArtifactoryUrl()
+        //{
+        //    var settings = StoredProcs
+        //                   .ExtensionConfiguration_GetConfiguration("Inedo.BuildMasterExtensions.Artifactory.ArtifactoryConfigurer,Artifactory", null)
+        //                   .Execute()
+        //                   .FirstOrDefault()
+        //                   .Extension_Configuration;
+
+        //    XmlDocument xml = new XmlDocument();
+        //    xml.LoadXml(settings);
+
+        //    XmlNode node = xml.SelectSingleNode("//Properties/@Server");
+
+        //    if (node == null)
+        //    {
+        //        return null;
+        //    }
+
+        //    return node.Value;
+        //}
+
+
         /// <summary>
         /// Gets the server name from the XML returned by the ExtensionConfiguration_GetConfiguration call for the Artifactory extension
         /// </summary>
-        private string GetArtifactoryExtensionArtifactoryUrl()
+        public static string GetArtifactoryConfigurerUrl()
         {
             var settings = StoredProcs
-                           .ExtensionConfiguration_GetConfiguration("Inedo.BuildMasterExtensions.Artifactory.ArtifactoryConfigurer,Artifactory", null)
+                           .ExtensionConfiguration_GetConfiguration("NZCustomsServiceExtension.ArtifactoryConfigurer,Artifactory", null)
                            .Execute()
                            .FirstOrDefault()
                            .Extension_Configuration;
@@ -190,7 +215,6 @@ namespace NZCustomsServiceExtension.Variables
 
             return node.Value;
         }
-
 
         /// <summary>
         /// Create and populate ArtifactoryVersionVariable from settings in database for this application
