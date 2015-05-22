@@ -15,22 +15,16 @@ namespace NZCustomsServiceExtension.Actions
 {
     [ActionProperties(
     "Retrieve Artifact",
-    "Retrieves an atifact from a repository.")]
-    [Tag("Artifactory")]
+    "Retrieves an atifact from a repository (Supports SSH).")]
+    [Tag("NZCustomsService")]
     [CustomEditor(typeof(RetrieveArtifactActionEditor))]
-    public class RetrieveArtifactAction : RemoteActionBase 
+    public class RetrieveArtifactAction : AgentBasedActionBase 
     {
-        //[Persistent]
-        //public int FileServerID { get; set; }
-
-        [Persistent]
-        public string FileName { get; set; }
-
         [Persistent]
         public string ItemName { get; set; }
 
         [Persistent]
-        public string Properties { get; set; }
+        public string FileName { get; set; }
 
         public RetrieveArtifactAction()
         {
@@ -38,17 +32,13 @@ namespace NZCustomsServiceExtension.Actions
 
         public override string ToString()
         {
-            return string.Format("Retrieve the {0} artifact from the {1} repository to {2}", this.ItemName, this.FileName);
-        }
-
-        internal string Test()
-        {
-            return ProcessRemoteCommand(null, null);
+            return string.Format("Retrieve the {0} artifact {2}", this.ItemName, this.FileName);
         }
 
         protected override void Execute()
         {
-            this.ExecuteRemoteCommand(null);
+            this.ProcessRemoteCommand();
+            //this.ExecuteRemoteCommand(null);
         }
 
         protected string ResolveDirectory(string FilePath)
@@ -65,14 +55,17 @@ namespace NZCustomsServiceExtension.Actions
             }
         }
 
-        protected override string ProcessRemoteCommand(string name, string[] args)
+        protected string ProcessRemoteCommand()
         {
+            this.LogDebug("ProcessRemoteCommand");
             string fname = this.ResolveDirectory(this.FileName);
+            this.LogDebug("fname=" + fname);
             string onlyFileName = Path.GetFileName(fname);
+            this.LogDebug("onlyFileName=" + onlyFileName);
             StringBuilder url = new StringBuilder();
 
             ArtifactoryConfigurer config = this.GetExtensionConfigurer() as ArtifactoryConfigurer;
-
+            this.LogDebug("config=" + config.Server);
             string server = config.Server;
 
             url.Append(server.EndsWith("/") ? server : server + "/");
@@ -92,6 +85,7 @@ namespace NZCustomsServiceExtension.Actions
 
             try
             {
+                this.LogDebug("trydownlaod");
                 req.DownloadFile(uri, fname);
                 return "OK";
             }
