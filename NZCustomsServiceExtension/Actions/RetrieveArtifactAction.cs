@@ -43,29 +43,37 @@ namespace NZCustomsServiceExtension.Actions
 
         protected string ResolveDirectory(string FilePath)
         {
-            using (var sourceAgent2 = Util.Agents.CreateLocalAgent())
-            {
-                var sourceAgent = sourceAgent2.GetService<IFileOperationsExecuter>();
+            this.LogInformation("ResolveDirectory=" + FilePath);
+            var fileOps = this.Context.Agent.GetService<IFileOperationsExecuter>();
+            var absWorkingDirectory = fileOps.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, FilePath);
+            this.LogInformation("absWorkingDirectory=" + absWorkingDirectory);
 
-                char srcSeparator = sourceAgent.GetDirectorySeparator();
-                var srcPath = sourceAgent.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, FilePath);
+            return "/tmp/buildmaster/art.txt";
+            
+            //using (var sourceAgent2 = Util.Agents.CreateLocalAgent())
+            //{
+            //    var sourceAgent = sourceAgent2.GetService<IFileOperationsExecuter>();
 
-                LogInformation("Source Path: " + srcPath);
-                return srcPath;
-            }
+            //    char srcSeparator = sourceAgent.GetDirectorySeparator();
+            //    var srcPath = sourceAgent.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, FilePath);
+
+            //    LogInformation("Source Path: " + srcPath);
+            //    return srcPath;
+            //}
         }
 
         protected string ProcessRemoteCommand()
         {
-            this.LogDebug("ProcessRemoteCommand");
+            this.LogInformation("ProcessRemoteCommand");
             string fname = this.ResolveDirectory(this.FileName);
-            this.LogDebug("fname=" + fname);
+
+            this.LogInformation("fname=" + fname);
             string onlyFileName = Path.GetFileName(fname);
-            this.LogDebug("onlyFileName=" + onlyFileName);
+            this.LogInformation("onlyFileName=" + onlyFileName);
             StringBuilder url = new StringBuilder();
 
             ArtifactoryConfigurer config = this.GetExtensionConfigurer() as ArtifactoryConfigurer;
-            this.LogDebug("config=" + config.Server);
+            this.LogInformation("config=" + config.Server);
             string server = config.Server;
 
             url.Append(server.EndsWith("/") ? server : server + "/");
