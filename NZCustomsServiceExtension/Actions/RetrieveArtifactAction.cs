@@ -32,7 +32,7 @@ namespace NZCustomsServiceExtension.Actions
 
         public override string ToString()
         {
-            return string.Format("Retrieve the {0} artifact {2}", this.ItemName, this.FileName);
+            return string.Format("Retrieve the {0} artifact {1}", this.ItemName, this.FileName);
         }
 
         protected override void Execute()
