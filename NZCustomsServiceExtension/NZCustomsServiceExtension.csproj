@@ -69,10 +69,6 @@
     <Compile Include="Actions\CleanupArtifactoryActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Actions\RetrieveArtifactAction.cs" />
-    <Compile Include="Actions\RetrieveArtifactActionEditor.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Actions\SetVariableToArtifactoryPathActionEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

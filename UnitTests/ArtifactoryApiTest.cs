@@ -11,12 +11,13 @@ namespace UnitTests
     [TestClass]
     public class ArtifactoryApiTest
     {
-        const String baseUrl = "http://artifactory:8081/artifactory";
+        const String baseUrl = "http://192.168.59.103:8081/artifactory";
+        //const String baseUrl = "http://artifactory:8081/artifactory";
             
         [TestMethod]
         public void GetFolderInfo()
         {
-            String repositoryPath = "libs-release-local/nz.govt.customs/SmartViewer";
+            String repositoryPath = "libs-release-local";
 
             ArtifactoryApi artifactory = new ArtifactoryApi(baseUrl);
 

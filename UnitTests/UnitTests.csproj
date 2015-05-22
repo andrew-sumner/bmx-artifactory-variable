@@ -35,20 +35,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BuildMaster.Web.Controls, Version=4.5.2.11, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Inedo.BuildMaster.SDK.4.5\lib\net40\BuildMaster.Web.Controls.dll</HintPath>
+    <Reference Include="BuildMaster.Web.Controls">
+      <HintPath>..\packages\Inedo.BuildMaster.SDK.4.6\lib\net40\BuildMaster.Web.Controls.dll</HintPath>
     </Reference>
-    <Reference Include="BuildMasterCore, Version=4.5.2.11, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Inedo.BuildMaster.SDK.4.5\lib\net40\BuildMasterCore.dll</HintPath>
+    <Reference Include="BuildMasterCore">
+      <HintPath>..\packages\Inedo.BuildMaster.SDK.4.6\lib\net40\BuildMasterCore.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="InedoLib, Version=150.1.0.0, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Inedo.BuildMaster.SDK.4.5\lib\net40\InedoLib.dll</HintPath>
+    <Reference Include="InedoLib">
+      <HintPath>..\packages\Inedo.BuildMaster.SDK.4.6\lib\net40\InedoLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="RestSharp, Version=105.1.0.0, Culture=neutral, processorArchitecture=MSIL">
