@@ -92,7 +92,7 @@ namespace UnitTests
             // A folder path must end with a forward slash
             target = new WGetFromArtifactoryAction_Accessor()
             {
-                OverrideArtifactoryServer = "http://nowhere",
+                //OverrideArtifactoryServer = "http://nowhere",
                 AcceptList = "*.sh",
                 RepositoryPath = "Cusmod/fred"
             };
@@ -104,7 +104,7 @@ namespace UnitTests
             // A file path must not end with a forward slash
             target = new WGetFromArtifactoryAction_Accessor()
             {
-                OverrideArtifactoryServer = "http://nowhere",
+                //OverrideArtifactoryServer = "http://nowhere",
                 RepositoryPath = "Cusmod/fred/file.sh"
             };
 

@@ -18,6 +18,7 @@ namespace NZCustomsServiceExtension.Variables
     using Inedo.BuildMaster.Web.Controls.Extensions;
     using NZCustomsServiceExtension.Artifactory;
     using NZCustomsServiceExtension.Artifactory.Domain;
+    using Inedo.BuildMaster;
 
     /// <summary>
     /// Artifactory build variable setter.
@@ -28,7 +29,7 @@ namespace NZCustomsServiceExtension.Variables
         /// Value to use for not included option
         /// </summary>
         public const string NotIncluded = "(Not Included)";
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ArtifactoryVersionVariableSetter"/> class.
         /// </summary>
@@ -165,15 +166,16 @@ namespace NZCustomsServiceExtension.Variables
 
             FolderInfo folderInfo;
 
+            ArtifactoryConfigurer config = variable.GlobalConfig;
+
             try
             {
-                //TODO How get the extension configurer within setter rather than action?
-                ArtifactoryApi artifactory = new ArtifactoryApi(ArtifactoryVersionVariable.GetArtifactoryConfigurerUrl());
+                ArtifactoryApi artifactory = new ArtifactoryApi(config);
                 folderInfo = artifactory.GetFolderInfo(repositoryPath);
             }
             catch (Exception ex)
             {
-                folders.Add(new ListItem(string.Format("<< storageURL: {0}/{1} >>", variable.GetBaseURL(), repositoryPath)));
+                folders.Add(new ListItem(string.Format("<< storageURL: {0}/{1} >>", config.Server, repositoryPath)));
                 folders.Add(new ListItem(string.Format("<< Failed: {0} >>", ex.Message)));                
                 return folders.ToArray();
             }

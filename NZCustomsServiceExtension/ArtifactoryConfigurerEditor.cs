@@ -12,8 +12,6 @@ namespace NZCustomsServiceExtension
         ValidatingTextBox txtUserName;
         ValidatingTextBox txtPassword;
         ValidatingTextBox txtServer;
-        
-        
 
         public ArtifactoryConfigurerEditor()
         {
@@ -60,25 +58,37 @@ namespace NZCustomsServiceExtension
             return configurer;
         }
 
-        protected override void OnLoad(EventArgs e)
+        protected override void CreateChildControls()
         {
-            base.OnLoad(e);
-        }
-  
-        protected override void OnInit(EventArgs e)
-        {
-            CUtil.Add(this,
-                new FormFieldGroup("Server", "The URL of the Artifactory server.", false,
-                    new StandardFormField("Server:",txtServer )
-                ),
-                new FormFieldGroup("Authentication","Authentication Information used for all Artifactory actions unless overridden in the action.",
-                    true,
-                    new StandardFormField("Username:",txtUserName),
-                    new StandardFormField("Password:",txtPassword)
-                )
+            this.Controls.Add(
+               new SlimFormField("Server:", this.txtServer) { HelpText = "The URL of the Artifactory server." },
+               new SlimFormField("Username:", this.txtUserName) { HelpText = "Authentication Information used for all Artifactory actions." },
+               new SlimFormField("Password:", this.txtPassword) { HelpText = "Authentication Information used for all Artifactory actions." }
             );
-            base.OnInit(e);
         }
+
+        //protected override void OnLoad(EventArgs e)
+        //{
+        //    base.OnLoad(e);
+        //}
+  
+       
+        //protected override void OnInit(EventArgs e)
+        //{
+            
+        //    //CUtil.Add(this,
+        //    //    new FormFieldGroup("Server", "The URL of the Artifactory server.", false,
+        //    //        new StandardFormField("Server:",txtServer )
+        //    //    ),
+        //    //    new FormFieldGroup("Authentication","Authentication Information used for all Artifactory actions unless overridden in the action.",
+        //    //        true,
+        //    //        new StandardFormField("Username:",txtUserName),
+        //    //        new StandardFormField("Password:",txtPassword)
+        //    //    )
+        //    //);
+
+        //    base.OnInit(e);
+        //}
 
     }
 }

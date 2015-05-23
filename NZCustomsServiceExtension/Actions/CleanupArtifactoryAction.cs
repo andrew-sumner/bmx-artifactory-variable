@@ -37,10 +37,17 @@ namespace NZCustomsServiceExtension.Actions
         {   
         }
 
-        protected ArtifactoryConfigurer Configurer
+        protected ArtifactoryConfigurer GlobalConfig
         {
             get
             {
+                if (this.IsConfigurerSettingRequired())
+                {
+                    String message = "The extension 'NZCustomsService' global configuration needs setting.";
+                    this.LogError(message);
+                    throw new Exception(message);
+                }
+
                 return this.GetExtensionConfigurer() as ArtifactoryConfigurer;
             }
         }
@@ -276,7 +283,7 @@ namespace NZCustomsServiceExtension.Actions
         {
             int numberRemoved = 0;
 
-            ArtifactoryApi artifactory = new ArtifactoryApi(this.Configurer);
+            ArtifactoryApi artifactory = new ArtifactoryApi(this.GlobalConfig);
             FolderInfo folderInfo = artifactory.GetFolderInfo(variable.ExpandRepositoryPath(releaseNameOrNumber, releaseNameOrNumber));
 
             foreach (var child in folderInfo.Children)

@@ -11,12 +11,7 @@ namespace NZCustomsServiceExtension.Artifactory
     public class ArtifactoryApi
     {
         private RestClient client;
-
-        public ArtifactoryApi(String server)
-        {
-            this.client = new RestClient(server);
-        }
-
+        
         public ArtifactoryApi(ArtifactoryConfigurer configurer)
         {
             this.client = new RestClient(configurer.Server);

@@ -21,11 +21,6 @@ namespace NZCustomsServiceExtension.Variables
     internal sealed class ArtifactoryVersionVariableEditor : VariableEditorBase
     {
         /// <summary>
-        /// Override server
-        /// </summary>
-        private ValidatingTextBox server;
-
-        /// <summary>
         /// Artifactory repository
         /// </summary>
         private ValidatingTextBox repositoryPath;
@@ -67,11 +62,6 @@ namespace NZCustomsServiceExtension.Variables
 
             var v = (ArtifactoryVersionVariable)extension;
 
-            /*
-            this.userName.Text = v.ActionUsername;
-            this.password.Text = v.ActionPassword;
-            */
-            this.server.Text = v.ActionServer;
             this.repositoryPath.Text = v.RepositoryPath;
             this.filter.Text = v.Filter;
             this.trimFromPath.Text = v.TrimFromPath;
@@ -89,7 +79,6 @@ namespace NZCustomsServiceExtension.Variables
 
             return new ArtifactoryVersionVariable
             {
-                ActionServer = this.server.Text,
                 RepositoryPath = this.repositoryPath.Text,
                 Filter = this.filter.Text,
                 TrimFromPath = this.trimFromPath.Text,
@@ -104,7 +93,6 @@ namespace NZCustomsServiceExtension.Variables
         /// </summary>
         protected override void CreateChildControls()
         {
-            this.server = new ValidatingTextBox() { Width = 250 };
             this.repositoryPath = new ValidatingTextBox() { Width = 250 };
             this.filter = new ValidatingTextBox { Width = 150 };
             this.trimFromPath = new ValidatingTextBox { Width = 250 };
@@ -114,7 +102,6 @@ namespace NZCustomsServiceExtension.Variables
             //new SlimFormField("Help", server) { "Ensure 'Scope' is set to Build and 'Default Value is Required' is checked." },
             this.Controls.Add(
                 new SlimFormField("IMPORTANT") { InnerHtml = "<i>Ensure 'Scope' is set to Build and 'Default Value is Required' is checked.</i>" },
-                new SlimFormField("Server:", this.server) { HelpText = "Server used for this action. Optional: if not populated then the server defined for the Artifactory extension will be used" },
                 new SlimFormField("Repository Path:", this.repositoryPath) { HelpText = "The path to the folder that contains the list of builds.<br>Supports use of the %RELNO% and %RELNAME% variables <i>(token for active release(s) rather than current release)</i>." },
                 new SlimFormField("Filter:", this.filter) { HelpText = "If builds for all releases placed in one folder, use this filter to only include active release related items (eg %RELNO%..*).<br><br><i>Note: This is a regular expression.</i>" },
                 new SlimFormField("Trim From Path:", this.trimFromPath) { HelpText = "To strip the artifactory path details from the list items that this control displays, enter the text that you wish removed from the start of the item.  Often this will be identical to the Repository Path setting." },

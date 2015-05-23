@@ -28,12 +28,6 @@ namespace NZCustomsServiceExtension.Actions
     {
         #region Properties
         /// <summary>
-        /// Gets or sets the artifactory servers url, override's the default url
-        /// </summary>
-        [Persistent]
-        public string OverrideArtifactoryServer { get; set; }
-
-        /// <summary>
         /// Gets or sets the path to the w-get application
         /// </summary>
         [Persistent]
@@ -65,6 +59,21 @@ namespace NZCustomsServiceExtension.Actions
         }
      
         #endregion
+
+        private ArtifactoryConfigurer GlobalConfig
+        {
+            get
+            {
+                if (this.IsConfigurerSettingRequired())
+                {
+                    String message = "The extension 'NZCustomsService' global configuration needs setting.";
+                    this.LogError(message);
+                    throw new Exception(message);
+                }
+
+                return this.GetExtensionConfigurer() as ArtifactoryConfigurer;
+            }
+        }
 
         /// <summary>
         /// See <see cref="object.ToString()"/>
@@ -128,7 +137,6 @@ namespace NZCustomsServiceExtension.Actions
         /// <returns>List of arguments</returns>
         private string GetWGetArguments()
         {
-            string url;
             string arguments = "-m -e robots=off -nd -np";
 
             if (!string.IsNullOrEmpty(this.AcceptList))
@@ -136,17 +144,8 @@ namespace NZCustomsServiceExtension.Actions
                 arguments += " -A" + this.AcceptList;
             }
 
-            // User override value for artifactory if set, otherwise default to 
-            // the one set for the artifactory extension
-            if (!string.IsNullOrEmpty(this.OverrideArtifactoryServer))
-            {
-                url = this.OverrideArtifactoryServer;
-            }
-            else
-            {
-                url = this.GetArtifactoryExtensionServer();
-            }
 
+            string url = this.GlobalConfig.Server;            
             if (!url.EndsWith("/"))
             {
                 url += "/";
@@ -168,32 +167,6 @@ namespace NZCustomsServiceExtension.Actions
             url += this.RepositoryPath;
 
             return arguments + " " + url;
-        }
-
-        /// <summary>
-        /// Gets the artifactory url from the artifactory extension configuration settings
-        /// TODO: This is a duplicate function from ArtifactoryVersionVariable
-        /// </summary>
-        /// <returns>Artifactory URL</returns>
-        private string GetArtifactoryExtensionServer()
-        {
-            var settings = StoredProcs
-                     .ExtensionConfiguration_GetConfiguration("Inedo.BuildMasterExtensions.Artifactory.ArtifactoryConfigurer,Artifactory", null)
-                     .Execute()
-                     .FirstOrDefault()
-                     .Extension_Configuration;
-
-            XmlDocument xml = new XmlDocument();
-            xml.LoadXml(settings);
-
-            XmlNode node = xml.SelectSingleNode("//Properties/@Server");
-
-            if (node == null)
-            {
-                return null;
-            }
-
-            return node.Value;
         }
     }
 }

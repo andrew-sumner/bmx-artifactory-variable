@@ -70,7 +70,7 @@ namespace UnitTests
             ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
-                ActionServer = "http://artifactory:8081/artifactory/",
+                //ActionServer = "http://artifactory:8081/artifactory/",
                 RepositoryPath = "Cusmod/client/%RELNO%"
             };
 
@@ -94,7 +94,7 @@ namespace UnitTests
             ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
-                ActionServer = "http://artifactory:8081/artifactory",
+                //ActionServer = "http://artifactory:8081/artifactory",
                 RepositoryPath = "libs-release-local/nz.govt.customs/MiddlewareJBMSInterface"
             };
 
@@ -123,7 +123,7 @@ namespace UnitTests
             ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
-                ActionServer = "http://artifactory:8081/artifactory",
+                //ActionServer = "http://artifactory:8081/artifactory",
                 RepositoryPath = "Cusmod/sql/CM%RELNO%",
                 Filter = "",  
                 TrimFromPath = "Cusmod/sql/",
@@ -151,7 +151,7 @@ namespace UnitTests
             ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
-                ActionServer = "http://artifactory:8081/artifactory",
+                //ActionServer = "http://artifactory:8081/artifactory",
                 RepositoryPath = "Cusmod/client/%RELNO%",
                 Filter = ".*" + TestVersion,   // Limit result set to one item
                 DefaultToNotIncluded = true
@@ -179,7 +179,7 @@ namespace UnitTests
             ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
-                ActionServer = "http://artifactory:8081/artifactory",
+                //ActionServer = "http://artifactory:8081/artifactory",
                 RepositoryPath = "Cusmod/sql/%RELNAME%",
                 Filter = "228"   // Limit result set to one item
             };
@@ -205,7 +205,7 @@ namespace UnitTests
             ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
-                ActionServer = "http://artifactory:8081/artifactory",
+                //ActionServer = "http://artifactory:8081/artifactory",
                 RepositoryPath = "Cusmod/server/%RELNAME%",
                 //Filter = "9.4.1"   // Limit result set to one item
             };
@@ -231,7 +231,7 @@ namespace UnitTests
             ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
-                ActionServer = "http://artifactory:8081/artifactory",
+                //ActionServer = "http://artifactory:8081/artifactory",
                 RepositoryPath = "Cusmod/client/%RELNO%",
                 Filter = ".*" + TestVersion,                   // Limit result set to one item
                 TrimFromPath = "Cusmod/client/",    // Remove string from result
@@ -265,7 +265,7 @@ namespace UnitTests
             ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
-                ActionServer = "http://artifactory:8081/artifactory",
+                //ActionServer = "http://artifactory:8081/artifactory",
                 RepositoryPath = "Cusmod/client/%RELNO%"
             };
 
@@ -288,7 +288,7 @@ namespace UnitTests
             ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
-                ActionServer = "http://artifactory:8081/artifactory",
+                //ActionServer = "http://artifactory:8081/artifactory",
                 RepositoryPath = "Cusmod/sql/CM%RELNO%",
                 TrimFromPath = "Cusmod/sql/"
             };
@@ -343,7 +343,7 @@ namespace UnitTests
             ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
-                ActionServer = "http://artifactory:8081/artifactory",
+                //ActionServer = "http://artifactory:8081/artifactory",
                 RepositoryPath = "libs-release-local/nz/govt/customs/WebBMS/",
                 TrimFromPath = "libs-release-local/nz/govt/customs/WebBMS/"
             };

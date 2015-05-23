@@ -36,6 +36,21 @@ namespace NZCustomsServiceExtension.Actions
             return string.Format("Retrieve the {0} artifact {1}", this.ItemName, this.FileName);
         }
 
+        protected ArtifactoryConfigurer GlobalConfig
+        {
+            get
+            {
+                if (this.IsConfigurerSettingRequired())
+                {
+                    String message = "The extension 'NZCustomsService' global configuration needs setting.";
+                    this.LogError(message);
+                    throw new Exception(message);
+                }
+
+                return this.GetExtensionConfigurer() as ArtifactoryConfigurer;
+            }
+        }
+
         protected override void Execute()
         {
             this.LogInformation("ProcessRemoteCommand");
@@ -46,10 +61,8 @@ namespace NZCustomsServiceExtension.Actions
             this.LogInformation("onlyFileName=" + onlyFileName);
             StringBuilder url = new StringBuilder();
 
-            ArtifactoryConfigurer config = this.GetExtensionConfigurer() as ArtifactoryConfigurer;
-            this.LogInformation("config=" + config.Server);
-            string server = config.Server;
-
+            string server = this.GlobalConfig.Server;
+            this.LogInformation("config=" + server);            
 
             url.Append(server.EndsWith("/") ? server : server + "/");
             url.Append(this.ItemName);

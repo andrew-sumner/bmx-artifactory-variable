@@ -37,12 +37,6 @@ namespace NZCustomsServiceExtension.Variables
         }
 
         /// <summary>
-        /// Gets or sets the artifactory servers url, override's the default url
-        /// </summary>
-        [Persistent]
-        public string ActionServer { get; set; }
-
-        /// <summary>
         /// Gets or sets the path to the Artifactory repository folder that the build folders can be found in
         /// </summary>
         [Persistent]
@@ -72,32 +66,40 @@ namespace NZCustomsServiceExtension.Variables
         [Persistent]
         public bool DefaultToNotIncluded { get; set; }
 
-        /// <summary>
-        /// Gets the Base URL based on the settings configured for the artifactory extension and this variable
-        /// in the format http://artifactory:8081/artifactory
-        /// </summary>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
-        public string GetBaseURL()
+        public ArtifactoryConfigurer GlobalConfig
         {
-            string url;
+            get {
+                ArtifactoryConfigurer configurer = Util.ExtensionConfigurers.GetExtensionConfigurer(this) as ArtifactoryConfigurer;
+            
+                if (configurer == null)
+                {
+                    String message = "The extension 'NZCustomsService' global configuration needs setting.";
+                    throw new Exception(message);
+                }
 
-            // use local first
-            if (!string.IsNullOrEmpty(this.ActionServer))
-            {
-                url = this.ActionServer;
-            }
-            else
-            {
-                url = GetArtifactoryConfigurerUrl();
-            }
-
-            if (url.EndsWith("/"))
-            {
-                url = url.Remove(url.Length - 1);
-            }
-                
-            return url;
+                return configurer;
+            }            
         }
+
+
+        ///// <summary>
+        ///// Gets the Base URL based on the settings configured for the artifactory extension and this variable
+        ///// in the format http://artifactory:8081/artifactory
+        ///// </summary>
+        //[SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
+        //public string GetBaseURL()
+        //{
+        //    ArtifactoryConfigurer config = this.GetExtensionConfigurer();
+            
+        //    string url = config.Server;
+
+        //    if (url.EndsWith("/"))
+        //    {
+        //        url = url.Remove(url.Length - 1);
+        //    }
+                
+        //    return url;
+        //}
 
         public bool RepositoryPathRequiresExpanding()
         {
@@ -193,30 +195,6 @@ namespace NZCustomsServiceExtension.Variables
 
 
         /// <summary>
-        /// Gets the server name from the XML returned by the ExtensionConfiguration_GetConfiguration call for the Artifactory extension
-        /// </summary>
-        public static string GetArtifactoryConfigurerUrl()
-        {
-            var settings = StoredProcs
-                           .ExtensionConfiguration_GetConfiguration("NZCustomsServiceExtension.ArtifactoryConfigurer,Artifactory", null)
-                           .Execute()
-                           .FirstOrDefault()
-                           .Extension_Configuration;
-
-            XmlDocument xml = new XmlDocument();
-            xml.LoadXml(settings);
-
-            XmlNode node = xml.SelectSingleNode("//Properties/@Server");
-
-            if (node == null)
-            {
-                return null;
-            }
-
-            return node.Value;
-        }
-
-        /// <summary>
         /// Create and populate ArtifactoryVersionVariable from settings in database for this application
         /// </summary>
         /// <param name="version">Version selected for the variable</param>
@@ -236,7 +214,6 @@ namespace NZCustomsServiceExtension.Variables
 
             return new ArtifactoryVersionVariable
             {
-                ActionServer = xml.SelectSingleNode("//Properties/@ActionServer").Value,
                 RepositoryPath = xml.SelectSingleNode("//Properties/@RepositoryPath").Value,
                 Filter = xml.SelectSingleNode("//Properties/@Filter").Value,
                 TrimFromPath = xml.SelectSingleNode("//Properties/@TrimFromPath").Value,
