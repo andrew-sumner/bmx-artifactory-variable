@@ -11,6 +11,7 @@ using Inedo.BuildMaster.Extensibility.Agents;
 using Inedo.BuildMaster.Web;
 using NZCustomsServiceExtension.Variables;
 using System.Threading;
+using Inedo.BuildMaster.Data;
 
 namespace NZCustomsServiceExtension.Actions
 {
@@ -65,8 +66,7 @@ namespace NZCustomsServiceExtension.Actions
 
             Uri uri = new Uri(config.Server);
 
-            string releaseName = this.Context.Variables["ReleaseName"];
-            uri = new Uri(uri, variable.ExpandRepositoryPath(this.Context.ReleaseNumber, releaseName));
+            uri = new Uri(uri, variable.ExpandRepositoryPath(this.Context.ReleaseNumber, GetReleaseName()));
             uri = new Uri(uri, this.ArtifactName);
 
             this.LogInformation("config=" + config.Server);
@@ -83,6 +83,15 @@ namespace NZCustomsServiceExtension.Actions
                         
             if (!DownloadFile(config, uri.ToString(), srcFileName)) return;
             TransferFile(srcFileOps, srcFileName, destFileOps, destFileName);            
+        }
+
+        private string GetReleaseName()
+        {
+            var execution = StoredProcs
+                     .Builds_GetExecution(this.Context.ExecutionId)
+                     .Execute().FirstOrDefault();
+
+            return execution.Release_Name;
         }
 
         private void TransferFile(IFileOperationsExecuter srcFileOps, string srcFileName, IFileOperationsExecuter destFileOps, string destFileName)

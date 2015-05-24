@@ -121,8 +121,11 @@ namespace NZCustomsServiceExtension.Variables
         {
             StringBuilder path = new StringBuilder();
 
-            path.Append(this.RepositoryKey ?? String.Empty);
-            path.Append("/");
+            if (!String.IsNullOrEmpty(this.RepositoryKey))
+            {
+                path.Append(this.RepositoryKey);
+                path.Append("/");
+            }
 
             string rp = this.RepositoryPath;
 
@@ -233,6 +236,7 @@ namespace NZCustomsServiceExtension.Variables
 
             return new ArtifactoryVersionVariable
             {
+                RepositoryKey = xml.SelectSingleNode("//Properties/@RepositoryKey").Value,
                 RepositoryPath = xml.SelectSingleNode("//Properties/@RepositoryPath").Value,
                 Filter = xml.SelectSingleNode("//Properties/@Filter").Value,
                 TrimFromPath = xml.SelectSingleNode("//Properties/@TrimFromPath").Value,
