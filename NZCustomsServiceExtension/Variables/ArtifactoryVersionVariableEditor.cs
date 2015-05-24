@@ -51,7 +51,13 @@ namespace NZCustomsServiceExtension.Variables
         /// </summary>
         private CheckBox defaultToNotIncluded;
 
-        public ArtifactoryConfigurer GlobalConfig { get; set; }
+        public ArtifactoryConfigurer GlobalConfig 
+        { 
+            get
+            {
+                return new ArtifactoryVersionVariable().GlobalConfig;
+            }
+        }
         
         /// <summary>
         /// Initializes a new instance of the <see cref="ArtifactoryVersionVariableEditor"/> class.
@@ -67,7 +73,6 @@ namespace NZCustomsServiceExtension.Variables
         public override void BindToForm(VariableBase extension)
         {
             var v = (ArtifactoryVersionVariable)extension;
-            this.GlobalConfig = v.GlobalConfig;
             
             this.EnsureChildControls();
 
@@ -122,9 +127,7 @@ namespace NZCustomsServiceExtension.Variables
                 new SlimFormField("Default Value: ", this.defaultToNotIncluded) { HelpText = "When unchceck will default to the latest build (last item in list), when checked not select a build." }
             );
 
-            this.repositoryKey.Items.Add(new ListItem("(All Artifactory Variables in Build Scope)", null));
-
-            ArtifactoryApi artifactory = new ArtifactoryApi(this.GlobalConfig); // This will delete object
+            ArtifactoryApi artifactory = new ArtifactoryApi(this.GlobalConfig); 
 
             List<Repository> repositories = artifactory.GetLocalRepositories();
             foreach (var repository in repositories)
