@@ -118,12 +118,16 @@ namespace NZCustomsServiceExtension.Variables
         /// </summary>
         public string ExpandRepositoryPath(string releaseNumber, string releaseName)
         {
-            string path = RepositoryPath;
+            Uri uri = new Uri(this.RepositoryKey);
+            uri = new Uri(this.RepositoryPath);
 
-            if (path.EndsWith("/"))
-            {
-                path = path.Remove(path.Length - 1);
-            }
+            string path = uri.ToString();
+
+
+            //if (path.EndsWith("/"))
+            //{
+            //    path = path.Remove(path.Length - 1);
+            //}
 
             // Format variables
             if (!string.IsNullOrEmpty(releaseNumber))

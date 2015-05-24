@@ -64,23 +64,12 @@ namespace NZCustomsServiceExtension.Actions
 
 
             Uri uri = new Uri(config.Server);
-            
-            Uri relativeUri1 = new Uri(uri, this.ArtifactName);
-            Uri relativeUri = new Uri("fred", UriKind.Relative);
 
-            // Create a new Uri from an absolute Uri and a relative Uri.
-            Uri combinedUri = new Uri(uri, relativeUri);
+            string releaseName = this.Context.Variables["ReleaseName"];
+            uri = new Uri(uri, variable.ExpandRepositoryPath(this.Context.ReleaseNumber, releaseName));
+            uri = new Uri(uri, this.ArtifactName);
 
-
-            // Source
-            StringBuilder url = new StringBuilder();
-            
             this.LogInformation("config=" + config.Server);
-
-            url.Append(config.Server.EndsWith("/") ? config.Server : config.Server + "/");
-            url.Append(this.ArtifactName);
-
-
 
             var srcFileOps = GetLocalFileOps();
             var destFileOps = GetRemoteFileOps();
@@ -92,15 +81,14 @@ namespace NZCustomsServiceExtension.Actions
             string destFileName = destFileOps.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, this.DestinationFileName); ;
             
                         
-            if (!DownloadFile(config, url.ToString(), srcFileName)) return;
+            if (!DownloadFile(config, uri.ToString(), srcFileName)) return;
             TransferFile(srcFileOps, srcFileName, destFileOps, destFileName);            
         }
 
         private void TransferFile(IFileOperationsExecuter srcFileOps, string srcFileName, IFileOperationsExecuter destFileOps, string destFileName)
         {
             this.LogInformation("Transfer {0} to {1} over SSH", srcFileName, destFileName);
-            var sshFileOps = this.Context.Agent.GetService<IFileOperationsExecuter>();
-
+            
             Stream srcStream = null;
             Stream destStream = null;
 
@@ -109,7 +97,7 @@ namespace NZCustomsServiceExtension.Actions
                 srcStream = srcFileOps.OpenFile(srcFileName, FileMode.Open, FileAccess.Read);
                 destStream = destFileOps.OpenFile(destFileName, FileMode.Create, FileAccess.Write);
 
-                byte[] buffer = new byte[2048];
+                byte[] buffer = new byte[4096];
                 int bytesRead;
 
                 while ((bytesRead = srcStream.Read(buffer, 0, buffer.Length)) > 0)

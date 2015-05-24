@@ -68,8 +68,8 @@ namespace NZCustomsServiceExtension.Variables
             // Add empty element so can select nothing
             this.Items.Add(NotIncluded);
 
-            if (!variable.RepositoryPath.Contains("%RELNO%") && !variable.RepositoryPath.Contains("%RELNAME%") && !variable.Filter.Contains("%RELNO%")
-                && !variable.Filter.Contains("%RELNAME%") )
+            if (!variable.RepositoryPath.Contains("%RELNO%") && !variable.RepositoryPath.Contains("%RELNAME%") && 
+                !variable.Filter.Contains("%RELNO%") && !variable.Filter.Contains("%RELNAME%") )
             {
                 this.Items.AddRange(this.GetReleaseBuilds(variable, "", ""));
             }
