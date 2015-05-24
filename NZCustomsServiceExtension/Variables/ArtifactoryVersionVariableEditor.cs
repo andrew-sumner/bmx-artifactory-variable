@@ -127,8 +127,9 @@ namespace NZCustomsServiceExtension.Variables
                 new SlimFormField("Default Value: ", this.defaultToNotIncluded) { HelpText = "When unchceck will default to the latest build (last item in list), when checked not select a build." }
             );
 
-            ArtifactoryApi artifactory = new ArtifactoryApi(this.GlobalConfig); 
+            ArtifactoryApi artifactory = new ArtifactoryApi(this.GlobalConfig);
 
+            this.repositoryKey.Items.Add(new ListItem(null));
             List<Repository> repositories = artifactory.GetLocalRepositories();
             foreach (var repository in repositories)
             {

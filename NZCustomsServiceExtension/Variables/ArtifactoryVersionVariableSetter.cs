@@ -108,7 +108,7 @@ namespace NZCustomsServiceExtension.Variables
         public static int GetApplicationIdFromUrl()
         {   
             int applicationId = 0;
-            string url = HttpContext.Current.Request.Url.AbsolutePath;
+            string url = HttpContext.Current.Request.Url.Query;
 
             string[] parts = url.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < parts.Length - 1; i++)
