@@ -14,12 +14,18 @@ namespace NZCustomsServiceExtension.Variables
     using Inedo.BuildMaster.Web.Controls.Extensions;
     using Inedo.Web.Controls;
     using Inedo.Web.Controls.ButtonLinks;
+    using NZCustomsServiceExtension.Artifactory;
+    using NZCustomsServiceExtension.Artifactory.Domain;
+    using System.Collections.Generic;
+    using Inedo.BuildMaster;
 
     /// <summary>
     /// Variable editor.
     /// </summary>
     internal sealed class ArtifactoryVersionVariableEditor : VariableEditorBase
     {
+        private DropDownList repositoryKey;
+
         /// <summary>
         /// Artifactory repository
         /// </summary>
@@ -45,6 +51,8 @@ namespace NZCustomsServiceExtension.Variables
         /// </summary>
         private CheckBox defaultToNotIncluded;
 
+        public ArtifactoryConfigurer GlobalConfig { get; set; }
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="ArtifactoryVersionVariableEditor"/> class.
         /// </summary>
@@ -58,10 +66,12 @@ namespace NZCustomsServiceExtension.Variables
         /// <param name="extension">The variable</param>
         public override void BindToForm(VariableBase extension)
         {
+            var v = (ArtifactoryVersionVariable)extension;
+            this.GlobalConfig = v.GlobalConfig;
+            
             this.EnsureChildControls();
 
-            var v = (ArtifactoryVersionVariable)extension;
-
+            this.repositoryKey.Text = v.RepositoryKey;
             this.repositoryPath.Text = v.RepositoryPath;
             this.filter.Text = v.Filter;
             this.trimFromPath.Text = v.TrimFromPath;
@@ -79,6 +89,7 @@ namespace NZCustomsServiceExtension.Variables
 
             return new ArtifactoryVersionVariable
             {
+                RepositoryKey = this.repositoryKey.Text,
                 RepositoryPath = this.repositoryPath.Text,
                 Filter = this.filter.Text,
                 TrimFromPath = this.trimFromPath.Text,
@@ -93,6 +104,7 @@ namespace NZCustomsServiceExtension.Variables
         /// </summary>
         protected override void CreateChildControls()
         {
+            this.repositoryKey = new DropDownList();
             this.repositoryPath = new ValidatingTextBox() { Width = 250 };
             this.filter = new ValidatingTextBox { Width = 150 };
             this.trimFromPath = new ValidatingTextBox { Width = 250 };
@@ -102,6 +114,7 @@ namespace NZCustomsServiceExtension.Variables
             //new SlimFormField("Help", server) { "Ensure 'Scope' is set to Build and 'Default Value is Required' is checked." },
             this.Controls.Add(
                 new SlimFormField("IMPORTANT") { InnerHtml = "<i>Ensure 'Scope' is set to Build and 'Default Value is Required' is checked.</i>" },
+                new SlimFormField("Repository:", this.repositoryKey) { HelpText = "The name of the repository the artifact is stored in." },
                 new SlimFormField("Repository Path:", this.repositoryPath) { HelpText = "The path to the folder that contains the list of builds.<br>Supports use of the %RELNO% and %RELNAME% variables <i>(token for active release(s) rather than current release)</i>." },
                 new SlimFormField("Filter:", this.filter) { HelpText = "If builds for all releases placed in one folder, use this filter to only include active release related items (eg %RELNO%..*).<br><br><i>Note: This is a regular expression.</i>" },
                 new SlimFormField("Trim From Path:", this.trimFromPath) { HelpText = "To strip the artifactory path details from the list items that this control displays, enter the text that you wish removed from the start of the item.  Often this will be identical to the Repository Path setting." },
@@ -109,40 +122,15 @@ namespace NZCustomsServiceExtension.Variables
                 new SlimFormField("Default Value: ", this.defaultToNotIncluded) { HelpText = "When unchceck will default to the latest build (last item in list), when checked not select a build." }
             );
 
-            //string helpText =
-            //        "Filter: only include release related items (eg %RELNO%..*)<br>" +
-            //        "Trim: text removed from list item.<br>" +
-            //        "Replace: check to replace / with . in list item.<br>" +
-            //        "NOTE: Ensure Scope set to build and default value is required is checked.";
+            this.repositoryKey.Items.Add(new ListItem("(All Artifactory Variables in Build Scope)", null));
 
-            //this.Controls.Add(
-            //    new FormFieldGroup(
-            //        "Server",
-            //        "Server used for this action. If not populated then the server defined for the Artifactory extension will be used.",
-            //        false,
-            //        new StandardFormField("Server:", this.server))
-            //        {
-            //            Narrow = true
-            //        },
-            //    new FormFieldGroup(
-            //        "Repository Path",
-            //        "The path to the folder that contains the list of builds.<br>Supports use of the %RELNO% and %RELNAME% variables <i>(token for active release(s) rather than current release)</i>.",
-            //        false,
-            //        new StandardFormField("Repository Path:", this.repositoryPath))
-            //        {
-            //            Narrow = true
-            //        },
-            //    new FormFieldGroup(
-            //        "Options",
-            //        helpText,
-            //        false,
-            //        new StandardFormField("Filter (regular expression):", this.filter),
-            //        new StandardFormField("Trim From Path:", this.trimFromPath),
-            //        new StandardFormField(string.Empty, this.replaceSlashWithDot),
-            //        new StandardFormField(string.Empty, this.defaultToNotIncluded))
-            //        {
-            //            Narrow = true
-            //        });
+            ArtifactoryApi artifactory = new ArtifactoryApi(this.GlobalConfig); // This will delete object
+
+            List<Repository> repositories = artifactory.GetLocalRepositories();
+            foreach (var repository in repositories)
+            {
+                this.repositoryKey.Items.Add(new ListItem(repository.Key));
+            }            
         }
     }
 }

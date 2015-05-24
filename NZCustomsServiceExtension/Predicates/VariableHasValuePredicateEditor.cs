@@ -64,25 +64,7 @@ namespace NZCustomsServiceExtension.Predicates
         /// </summary>
         protected override void CreateChildControls()
         {
-            //this.variableName = new ValidatingTextBox
-            //{
-            //    Required = true,
-            //    TextMode = TextBoxMode.SingleLine,
-            //    Width = 250,
-            //    Rows = 1
-            //};
-
-            //this.Controls.Add(
-            //    new FormFieldGroup(
-            //        "Options",
-            //        "Select variable.",
-            //        false,
-            //        new StandardFormField(string.Empty, this.variableName))
-            //    {
-            //        Narrow = true
-            //    });
-
-            this.variableName = new DropDownList { Width = 300 };
+            this.variableName = new DropDownList();// { Width = 300 };
             
             this.Controls.Add(
                 new SlimFormField("Variable:", this.variableName) { HelpText = "The name of the artifactory variable - requires that you have defined a build scoped Artifactory variable." }

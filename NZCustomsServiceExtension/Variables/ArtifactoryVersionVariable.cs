@@ -37,6 +37,12 @@ namespace NZCustomsServiceExtension.Variables
         }
 
         /// <summary>
+        /// Gets or sets the name of the repository repository the item can be found in
+        /// </summary>
+        [Persistent]
+        public string RepositoryKey { get; set; }
+
+        /// <summary>
         /// Gets or sets the path to the Artifactory repository folder that the build folders can be found in
         /// </summary>
         [Persistent]

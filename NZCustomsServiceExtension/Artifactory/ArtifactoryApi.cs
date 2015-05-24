@@ -68,5 +68,28 @@ namespace NZCustomsServiceExtension.Artifactory
                 throw new ApplicationException(response.StatusDescription);
             }
         }
+
+        /**
+         * Return information about the provided path
+         */
+        public List<Repository> GetLocalRepositories()
+        {
+            RestRequest request = new RestRequest("/api/repositories?type=local", Method.GET);
+            
+            var response = client.Execute(request);
+
+            if (response.ErrorException != null)
+            {
+                const string message = "Error retrieving response.  Check inner details for more info.";
+                throw new ApplicationException(message, response.ErrorException);
+            }
+
+            if (((int)response.StatusCode) > 399)
+            {
+                throw new ApplicationException(response.StatusDescription);
+            }
+
+            return JsonConvert.DeserializeObject<List<Repository>>(response.Content);
+        }
     }
 }

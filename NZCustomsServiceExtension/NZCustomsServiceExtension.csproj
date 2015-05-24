@@ -87,6 +87,7 @@
     </Compile>
     <Compile Include="Artifactory\ArtifactoryApi.cs" />
     <Compile Include="Artifactory\Domain\FolderChild.cs" />
+    <Compile Include="Artifactory\Domain\Repository.cs" />
     <Compile Include="Artifactory\Domain\FolderInfo.cs" />
     <Compile Include="Predicates\VariableHasValuePredicate.cs" />
     <Compile Include="Predicates\VariableHasValuePredicateEditor.cs">

@@ -7,13 +7,15 @@ using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
 using Inedo.Web.Controls;
+using NZCustomsServiceExtension.Variables;
 
 namespace NZCustomsServiceExtension.Actions
 {
     internal sealed class RetrieveArtifactActionEditor : ActionEditorBase
     {
-        private ValidatingTextBox txtItemName;
-        private SourceControlFileFolderPicker ffpFileName;
+        private DropDownList artifactoryVariable;        
+        private ValidatingTextBox artifactName;
+        private SourceControlFileFolderPicker destinationFileName;
         //private ValidatingTextBox ffpFileName;
 
         public RetrieveArtifactActionEditor()
@@ -25,8 +27,10 @@ namespace NZCustomsServiceExtension.Actions
             this.EnsureChildControls();
 
             var action = (RetrieveArtifactAction)extension;
-            this.txtItemName.Text = action.ItemName;
-            this.ffpFileName.Text = action.FileName;
+
+            this.artifactoryVariable.Text = action.ArtifactoryVariable;
+            this.artifactName.Text = action.ArtifactName;
+            this.destinationFileName.Text = action.DestinationFileName;
         }
 
         public override ActionBase CreateFromForm()
@@ -35,21 +39,28 @@ namespace NZCustomsServiceExtension.Actions
 
             return new RetrieveArtifactAction
             {
-                ItemName = this.txtItemName.Text,
-                FileName = this.ffpFileName.Text
+                ArtifactoryVariable = this.artifactoryVariable.Text,
+                ArtifactName = this.artifactName.Text,
+                DestinationFileName = this.destinationFileName.Text
             };
         }
 
         protected override void CreateChildControls()
         {
             base.CreateChildControls();
-            this.txtItemName = new ValidatingTextBox() { Width = 300 };
-            this.ffpFileName = new SourceControlFileFolderPicker() { ServerId = this.ServerId };
-            this.Controls.Add(new FormFieldGroup("Artifact", "Artifact Information", true,
-                new StandardFormField("Item Name:", txtItemName),
-                new StandardFormField("Output File:", ffpFileName)
-                )
+            this.artifactoryVariable = new DropDownList();
+            this.artifactName = new ValidatingTextBox() { Width = 300 };
+            this.destinationFileName = new SourceControlFileFolderPicker() { ServerId = this.ServerId };
+
+            this.Controls.Add(
+                new SlimFormField("Artifactory Variable:", this.artifactoryVariable) { HelpText = "Choose a specific artifactory variable, or all artifactory variables in build scope." },
+                new SlimFormField("Item Name:", this.artifactName) { HelpText = "Checking this option means that this action will only log what it would delete, unchecking it will cause the action to actually delete artifacts from Artifactory." },
+                new SlimFormField("Output File:", this.destinationFileName)
+                
             );
+         
+            //this.artifactoryVariable.Items.Add(new ListItem("(All Artifactory Variables in Build Scope)", ALL_ARTIFACTORY_VARIABLES));
+            this.artifactoryVariable.Items.AddRange(ArtifactoryVersionVariable.GetArtifactoryVariablesInBuildScope(this.ApplicationId));
         }
     }
 }

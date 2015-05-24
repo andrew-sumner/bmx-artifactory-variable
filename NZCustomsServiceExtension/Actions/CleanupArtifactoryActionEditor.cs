@@ -113,7 +113,7 @@ namespace NZCustomsServiceExtension.Actions
                 new SlimFormField("Final Envrionment:", this.buildsToKeepFinal) { HelpText = "Could be read as how many production releases should we keep in the archive." }
             );
 
-            this.artifactoryVariable.Items.Add(new ListItem("[All Artifactory Variables in Build Scope]", ALL_ARTIFACTORY_VARIABLES));
+            this.artifactoryVariable.Items.Add(new ListItem("(All Artifactory Variables in Build Scope)", ALL_ARTIFACTORY_VARIABLES));
             this.artifactoryVariable.Items.AddRange(ArtifactoryVersionVariable.GetArtifactoryVariablesInBuildScope(this.ApplicationId));
         }
     }
