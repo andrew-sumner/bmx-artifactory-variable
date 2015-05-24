@@ -59,13 +59,18 @@ namespace NZCustomsServiceExtension.Actions
             this.LogInformation("ProcessRemoteCommand");
 
             
+            ArtifactoryVersionVariable variable = ArtifactoryVersionVariable.GetVariableDeclaration(this.Context.ApplicationId, this.ArtifactoryVariable);
             ArtifactoryConfigurer config = this.GlobalConfig;
 
-            var variables = Util.Variables.EnumerateVariables(executionId: this.Context.ExecutionId);
 
-            UriBuilder uri = new UriBuilder(config.Server);
-            uri.Path = this.ArtifactName;
-            uri.Path = "fred";
+            Uri uri = new Uri(config.Server);
+            
+            Uri relativeUri1 = new Uri(uri, this.ArtifactName);
+            Uri relativeUri = new Uri("fred", UriKind.Relative);
+
+            // Create a new Uri from an absolute Uri and a relative Uri.
+            Uri combinedUri = new Uri(uri, relativeUri);
+
 
             // Source
             StringBuilder url = new StringBuilder();
@@ -75,69 +80,81 @@ namespace NZCustomsServiceExtension.Actions
             url.Append(config.Server.EndsWith("/") ? config.Server : config.Server + "/");
             url.Append(this.ArtifactName);
 
+
+
+            var srcFileOps = GetLocalFileOps();
+            var destFileOps = GetRemoteFileOps();
             
-            // Destination
-            string fname = this.ResolveDirectory(this.DestinationFileName);
-            this.LogInformation("fname=" + fname);
+            string onlyFileName = Path.GetFileName(this.DestinationFileName);
+            string folder = Path.GetDirectoryName(this.DestinationFileName);
 
-            string onlyFileName = Path.GetFileName(fname);
-            this.LogInformation("onlyFileName=" + onlyFileName);
-
+            string srcFileName = srcFileOps.CombinePath(srcFileOps.GetBaseWorkingDirectory(), onlyFileName);
+            string destFileName = destFileOps.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, this.DestinationFileName); ;
             
-            var req = new WebClient();
-            req.Credentials = new NetworkCredential(config.Username, config.Password);
+                        
+            if (!DownloadFile(config, url.ToString(), srcFileName)) return;
+            TransferFile(srcFileOps, srcFileName, destFileOps, destFileName);            
+        }
 
-            //TODO: get temp path and filename
+        private void TransferFile(IFileOperationsExecuter srcFileOps, string srcFileName, IFileOperationsExecuter destFileOps, string destFileName)
+        {
+            this.LogInformation("Transfer {0} to {1} over SSH", srcFileName, destFileName);
+            var sshFileOps = this.Context.Agent.GetService<IFileOperationsExecuter>();
 
-            this.LogInformation("OverriddenWorkingDirectory=" + this.OverriddenWorkingDirectory);
+            Stream srcStream = null;
+            Stream destStream = null;
 
             try
             {
-                req.DownloadFile(url.ToString(), "C:\\temp\\" + onlyFileName);
+                srcStream = srcFileOps.OpenFile(srcFileName, FileMode.Open, FileAccess.Read);
+                destStream = destFileOps.OpenFile(destFileName, FileMode.Create, FileAccess.Write);
+
+                byte[] buffer = new byte[2048];
+                int bytesRead;
+
+                while ((bytesRead = srcStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    destStream.Write(buffer, 0, bytesRead);
+                }
+            }
+            finally
+            {
+                if (srcStream != null) srcStream.Close();
+                if (destStream != null) destStream.Close();
+            }
+
+        }
+
+        private bool DownloadFile(ArtifactoryConfigurer config, string url, string srcFileName)
+        {
+            this.LogInformation("Downloading {0} artifact to {1}", url, srcFileName);
+
+            var req = new WebClient();
+            req.Credentials = new NetworkCredential(config.Username, config.Password);
+
+            try
+            {
+                req.DownloadFile(url, srcFileName);
             }
             catch (Exception ex)
             {
-                this.LogError("Error retrieving the {0} artifact in repository {1}. Error: {2}", fname, url.ToString(), ex.ToString());
-                return;
+                this.LogError("Error retrieving the artifact from {0}. Error: {1}", url, ex.ToString());
+                return false;
             }
-            
 
-            var sshFileOps = this.Context.Agent.GetService<IFileOperationsExecuter>();
-            
-
+            return true;
         }
 
-        protected string ResolveDirectory(string FilePath)
+        protected IFileOperationsExecuter GetRemoteFileOps()
         {
-            
-            this.LogInformation("ResolveDirectory=" + FilePath);
-
-            
-            var fileOps = this.Context.Agent.GetService<IFileOperationsExecuter>();
-            string temp = this.Context.TempDirectory;
-
-            char sep = fileOps.GetDirectorySeparator();
-
-            var absWorkingDirectory = fileOps.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, FilePath);
-            this.LogInformation("absWorkingDirectory=" + absWorkingDirectory);
-
-            
-            using (var sourceAgent2 = Util.Agents.CreateLocalAgent())
-            {
-                var sourceAgent = sourceAgent2.GetService<IFileOperationsExecuter>();
-
-                char srcSeparator = sourceAgent.GetDirectorySeparator();
-                var srcPath = sourceAgent.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, FilePath);
-
-                LogInformation("Source Path: " + srcPath);
-                //return srcPath;
-            }
-
-            return absWorkingDirectory;
-
+            return this.Context.Agent.GetService<IFileOperationsExecuter>();
         }
 
-      
+        protected IFileOperationsExecuter GetLocalFileOps()
+        {
+            var sourceAgent = Util.Agents.CreateLocalAgent();
+            return sourceAgent.GetService<IFileOperationsExecuter>();
+        }
     }
 
     
