@@ -121,7 +121,7 @@ namespace NZCustomsServiceExtension.Variables
         {
             StringBuilder path = new StringBuilder();
 
-            path.Append(this.RepositoryPath ?? String.Empty);
+            path.Append(this.RepositoryKey ?? String.Empty);
             path.Append("/");
 
             string rp = this.RepositoryPath;
