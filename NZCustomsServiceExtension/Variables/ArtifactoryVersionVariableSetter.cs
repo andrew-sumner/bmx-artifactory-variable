@@ -128,7 +128,7 @@ namespace NZCustomsServiceExtension.Variables
 
             for (int i = 0; i < parts.Length - 1; i++)
             {
-                if (parts[i].ToLower() == "applicationId")
+                if (parts[i].ToLower() == "applicationid")
                 {
                     return int.Parse(parts[i + 1]);
                 }
