@@ -116,7 +116,7 @@ namespace NZCustomsServiceExtension.Variables
 
             if (applicationId < 0) 
             {
-                throw new Exception(String.Format("Unable to find ApplicationId in URL {0}", HttpContext.Current.Request.Url.OriginalString))
+                throw new Exception(String.Format("Unable to find ApplicationId in URL {0}", HttpContext.Current.Request.Url.OriginalString));
             }
 
             return applicationId;
