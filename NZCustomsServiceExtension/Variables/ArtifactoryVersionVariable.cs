@@ -17,6 +17,7 @@ namespace NZCustomsServiceExtension.Variables
     using System;
     using System.Collections.Generic;
     using System.Web.UI.WebControls;
+    using System.Text;
 
     /// <summary>
     /// Artifactory build variable.  Allows selection of a specific build in Artifactory.
@@ -118,25 +119,24 @@ namespace NZCustomsServiceExtension.Variables
         /// </summary>
         public string ExpandRepositoryPath(string releaseNumber, string releaseName)
         {
-            Uri uri;
+            StringBuilder path = new StringBuilder();
 
-            if (String.IsNullOrEmpty(this.RepositoryKey))
+            path.Append(this.RepositoryPath ?? String.Empty);
+            path.Append("/");
+
+            string rp = this.RepositoryPath;
+
+            if (rp.EndsWith("/"))
             {
-                uri = new Uri(this.RepositoryPath);
+                rp = rp.Substring(1);
             }
-            else
+
+            if (rp.EndsWith("/"))
             {
-                uri = new Uri(this.RepositoryKey);
-                uri = new Uri(uri, this.RepositoryPath); 
+                rp = rp.Remove(path.Length - 1);
             }
 
-            string path = uri.ToString();
-
-
-            //if (path.EndsWith("/"))
-            //{
-            //    path = path.Remove(path.Length - 1);
-            //}
+            path.Append(rp);
 
             // Format variables
             if (!string.IsNullOrEmpty(releaseNumber))
@@ -149,7 +149,7 @@ namespace NZCustomsServiceExtension.Variables
                 path = path.Replace("%RELNAME%", releaseName);
             }
 
-            return path;
+            return path.ToString();
         }
 
         public string ExpandFilter(string releaseNumber, string releaseName)
