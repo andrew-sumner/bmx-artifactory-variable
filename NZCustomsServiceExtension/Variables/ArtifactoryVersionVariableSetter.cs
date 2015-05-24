@@ -106,13 +106,14 @@ namespace NZCustomsServiceExtension.Variables
         /// </summary>
         /// <returns>Application Id</returns>
         public static int GetApplicationIdFromUrl()
-        {   
-            int applicationId = GetApplicationIdFromQuery();
+        {
+            int applicationId;
+            //int applicationId = GetApplicationIdFromQuery();
 
-            if (applicationId < 0) 
-            {
+            //if (applicationId < 0) 
+            //{
                 applicationId = GetApplicationIdFromPath();
-            }
+            //}
 
             if (applicationId < 0) 
             {

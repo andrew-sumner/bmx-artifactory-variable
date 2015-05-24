@@ -58,16 +58,23 @@ namespace NZCustomsServiceExtension.Actions
         {
             this.LogInformation("ProcessRemoteCommand");
 
+            
             ArtifactoryConfigurer config = this.GlobalConfig;
+
+            var variables = Util.Variables.EnumerateVariables(executionId: this.Context.ExecutionId);
+
+            UriBuilder uri = new UriBuilder(config.Server);
+            uri.Path = this.ArtifactName;
+            uri.Path = "fred";
 
             // Source
             StringBuilder url = new StringBuilder();
-
+            
             this.LogInformation("config=" + config.Server);
 
             url.Append(config.Server.EndsWith("/") ? config.Server : config.Server + "/");
             url.Append(this.ArtifactName);
-            
+
             
             // Destination
             string fname = this.ResolveDirectory(this.DestinationFileName);
@@ -96,7 +103,7 @@ namespace NZCustomsServiceExtension.Actions
             
 
             var sshFileOps = this.Context.Agent.GetService<IFileOperationsExecuter>();
-            sshFileOps.FileCopyBatch("C:\\temp\\", new String[] {onlyFileName}, fname, new String[] {onlyFileName}, true, true);
+            
 
         }
 
@@ -105,22 +112,29 @@ namespace NZCustomsServiceExtension.Actions
             
             this.LogInformation("ResolveDirectory=" + FilePath);
 
+            
             var fileOps = this.Context.Agent.GetService<IFileOperationsExecuter>();
+            string temp = this.Context.TempDirectory;
+
+            char sep = fileOps.GetDirectorySeparator();
+
             var absWorkingDirectory = fileOps.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, FilePath);
             this.LogInformation("absWorkingDirectory=" + absWorkingDirectory);
 
+            
+            using (var sourceAgent2 = Util.Agents.CreateLocalAgent())
+            {
+                var sourceAgent = sourceAgent2.GetService<IFileOperationsExecuter>();
+
+                char srcSeparator = sourceAgent.GetDirectorySeparator();
+                var srcPath = sourceAgent.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, FilePath);
+
+                LogInformation("Source Path: " + srcPath);
+                //return srcPath;
+            }
+
             return absWorkingDirectory;
 
-            //using (var sourceAgent2 = Util.Agents.CreateLocalAgent())
-            //{
-            //    var sourceAgent = sourceAgent2.GetService<IFileOperationsExecuter>();
-
-            //    char srcSeparator = sourceAgent.GetDirectorySeparator();
-            //    var srcPath = sourceAgent.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, FilePath);
-
-            //    LogInformation("Source Path: " + srcPath);
-            //    return srcPath;
-            //}
         }
 
       
