@@ -123,7 +123,9 @@ namespace NZCustomsServiceExtension.Actions
 
             try
             {
-                srcStream = srcFileOps.OpenFile(srcFileName, FileMode.Open, FileAccess.Read);
+                srcStream = File.Open(srcFileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+                //srcStream = srcFileOps.OpenFile(srcFileName, FileMode.Open, FileAccess.Read);
                 destStream = destFileOps.OpenFile(destFileName, FileMode.Create, FileAccess.Write);
 
                 //const int ONE_MB = 1048576;
