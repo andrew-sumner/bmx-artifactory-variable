@@ -16,6 +16,8 @@ namespace NZCustomsServiceExtension.Actions
         private DropDownList artifactoryVariable;        
         private ValidatingTextBox artifactName;
         private SourceControlFileFolderPicker destinationFileName;
+        private CheckBox markAsExecutable;
+
         //private ValidatingTextBox ffpFileName;
 
         public RetrieveArtifactActionEditor()
@@ -31,6 +33,7 @@ namespace NZCustomsServiceExtension.Actions
             this.artifactoryVariable.Text = action.ArtifactoryVariable;
             this.artifactName.Text = action.ArtifactName;
             this.destinationFileName.Text = action.DestinationFileName;
+            this.markAsExecutable.Checked = action.MarkAsExecutable;
         }
 
         public override ActionBase CreateFromForm()
@@ -41,7 +44,8 @@ namespace NZCustomsServiceExtension.Actions
             {
                 ArtifactoryVariable = this.artifactoryVariable.Text,
                 ArtifactName = this.artifactName.Text,
-                DestinationFileName = this.destinationFileName.Text 
+                DestinationFileName = this.destinationFileName.Text,
+                MarkAsExecutable = this.markAsExecutable.Checked
             };
         }
 
@@ -51,12 +55,13 @@ namespace NZCustomsServiceExtension.Actions
             this.artifactoryVariable = new DropDownList();
             this.artifactName = new ValidatingTextBox() { Width = 300 };
             this.destinationFileName = new SourceControlFileFolderPicker() { ServerId = this.ServerId, DefaultText = "Working Directory and Item Name" };
+            this.markAsExecutable = new CheckBox() { Text = "Mark As Executable" };
 
             this.Controls.Add(
                 new SlimFormField("Artifactory Variable:", this.artifactoryVariable) { HelpText = "Choose a specific artifactory variable, or all artifactory variables in build scope." },
                 new SlimFormField("Item Name:", this.artifactName) { HelpText = "Checking this option means that this action will only log what it would delete, unchecking it will cause the action to actually delete artifacts from Artifactory." },
-                new SlimFormField("Output File:", this.destinationFileName)
-                
+                new SlimFormField("Output File:", this.destinationFileName),
+                new SlimFormField("Make Executable:", this.markAsExecutable) { HelpText = "chmod 0755" }
             );
          
             //this.artifactoryVariable.Items.Add(new ListItem("(All Artifactory Variables in Build Scope)", ALL_ARTIFACTORY_VARIABLES));

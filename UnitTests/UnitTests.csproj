@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="trial.sh" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Test References\" />

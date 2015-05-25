@@ -31,6 +31,9 @@ namespace NZCustomsServiceExtension.Actions
         [Persistent]
         public string DestinationFileName { get; set; }
 
+        [Persistent]
+        public bool MarkAsExecutable { get; set; }
+
         public RetrieveArtifactAction()
         {
         }
@@ -75,11 +78,22 @@ namespace NZCustomsServiceExtension.Actions
             string onlyFileName = Path.GetFileName(this.DestinationFileName ?? this.ArtifactName);
                         
             string srcFileName = srcFileOps.CombinePath(srcFileOps.GetBaseWorkingDirectory(), onlyFileName);
-            string destFileName = destFileOps.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, this.DestinationFileName ?? this.ArtifactName); ;
-
+            string destFileName = destFileOps.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, this.DestinationFileName ?? this.ArtifactName);
 
             if (!DownloadFile(config, uri.ToString(), srcFileOps, srcFileName)) return;
-            TransferFile(srcFileOps, srcFileName, destFileOps, destFileName);            
+            TransferFile(srcFileOps, srcFileName, destFileOps, destFileName);
+
+            if (this.MarkAsExecutable) 
+            {
+                string fileName = Path.GetFileName(destFileName);
+                string filePath = Path.GetFullPath(destFileName);
+
+                int chmodRet = this.ExecuteCommandLine("/bin/bash", "-c \"if [[ \\\"`ls -1 *.sh 2>/dev/null`\\\" ]]; then chmod 0755 " + fileName + "; else exit 0; fi\"", filePath);
+                if (chmodRet != 0)
+                {
+                    this.LogWarning("chmod return code indicates error: {0} (0x{0:X8})", chmodRet);
+                }
+            }
         }
 
         private string GetReleaseName()
