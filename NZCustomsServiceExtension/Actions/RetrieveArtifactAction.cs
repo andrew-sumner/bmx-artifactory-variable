@@ -96,7 +96,9 @@ namespace NZCustomsServiceExtension.Actions
 
             //int chmodRet = this.ExecuteCommandLine("/bin/bash", "-c \"if [[ \\\"`ls -1 *.sh 2>/dev/null`\\\" ]]; then chmod 0755 " + fileName + "; else exit 0; fi\"", filePath);
 
-            int chmodRet = this.ExecuteCommandLine("chmod", "chmod 0755 " + fileName, filePath);
+            string cmd = "chmod";
+            string param = "0755 " + fileName;
+            int chmodRet = this.ExecuteCommandLine(cmd, param, filePath);
             if (chmodRet != 0)
             {
                 this.LogWarning("chmod return code indicates error: {0}", chmodRet);
