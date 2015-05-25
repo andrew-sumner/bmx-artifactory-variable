@@ -50,25 +50,82 @@ namespace UnitTests
         // {
         // }
         #endregion
-        
-        /// <summary>
-        /// A test for GetArtifactoryExtensionServer
-        /// </summary>
-        [TestMethod]
-        [DeploymentItem("NZCustomsServiceExtension.dll")]
-        public void GetArtifactoryExtensionServerTest()
+
+        ArtifactoryVersionVariable variableReleasesGrouped = new ArtifactoryVersionVariable
         {
-            //ArtifactoryVersionVariable_Accessor target = new ArtifactoryVersionVariable_Accessor(); 
+            RepositoryKey = "libs-release-local",
+            RepositoryPath = "mygroup.co.nz",
+            Filter = "%RELNO%",
+            TrimFromPath = "mygroup.co.nz",
+            ReplaceSlashWithDot = false,
+            DefaultToNotIncluded = false
+        };
 
-            //string settings = "<Inedo.BuildMasterExtensions.Artifactory.ArtifactoryConfigurer Assembly=\"Artifactory\"><Properties Server=\"http://artifactory:8081/artifactory/\" Username=\"admin\" Password=\"password\" /></Inedo.BuildMasterExtensions.Artifactory.ArtifactoryConfigurer>";            
-            //string actual = target.GetArtifactoryExtensionArtifactoryUrl(settings);
+        ArtifactoryVersionVariable variableReleasePerFolder = new ArtifactoryVersionVariable
+        {
+            RepositoryKey = "libs-release-local",
+            RepositoryPath = "myapp/%RELNO%",
+            Filter = String.Empty,
+            TrimFromPath = "myapp",
+            ReplaceSlashWithDot = true,
+            DefaultToNotIncluded = false
+        };
 
-            //Assert.AreEqual("http://artifactory:8081/artifactory/", actual);
+
+        [TestMethod]
+        public void RepositoryPathRequiresExpanding()
+        {
+            Assert.AreEqual(false, variableReleasesGrouped.RepositoryPathRequiresExpanding());
+            Assert.AreEqual(true, variableReleasePerFolder.RepositoryPathRequiresExpanding());
             
-            //settings = "<Inedo.BuildMasterExtensions.Artifactory.ArtifactoryConfigurer Assembly=\"Artifactory\"><Properties NoServer=\"http://artifactory:8081/artifactory/\" Username=\"admin\" Password=\"password\" /></Inedo.BuildMasterExtensions.Artifactory.ArtifactoryConfigurer>";
-            //actual = target.GetArtifactoryExtensionArtifactoryUrl(settings);
+        }
 
-            //Assert.AreEqual(null, actual);
+        [TestMethod]
+        public void ExpandFilter()
+        {
+            Assert.AreEqual("0.1", variableReleasesGrouped.ExpandFilter("0.1", "0.1"));
+            Assert.AreEqual(String.Empty, variableReleasePerFolder.ExpandFilter("0.1", "0.1"));
+        }
+
+        [TestMethod]
+        public void ExpandTrimFromPath()
+        {
+            Assert.AreEqual("libs-release-local/mygroup.co.nz", variableReleasesGrouped.ExpandTrimFromPath("0.1", "0.1"));
+            Assert.AreEqual("libs-release-local/myapp", variableReleasePerFolder.ExpandTrimFromPath("0.1", "0.1"));
+        }
+
+        [TestMethod]
+        public void ExpandRepositoryPath()
+        {
+            Assert.AreEqual("libs-release-local/mygroup.co.nz", variableReleasesGrouped.ExpandRepositoryPath("0.1", "0.1"));
+            Assert.AreEqual("libs-release-local/myapp/0.1", variableReleasePerFolder.ExpandRepositoryPath("0.1", "0.1"));
+        }
+
+        [TestMethod]
+        public void ExpandRepositoryPathWithValue()
+        {
+            // Releases Grouped
+            Assert.AreEqual("libs-release-local/mygroup.co.nz/0.1.33", variableReleasesGrouped.ExpandRepositoryPathWithValue("0.1", "0.1", "0.1.33"));
+
+            string trim = variableReleasesGrouped.TrimFromPath;
+
+            variableReleasesGrouped.TrimFromPath = String.Empty;
+
+            Assert.AreEqual("libs-release-local/mygroup.co.nz/0.1.33", variableReleasesGrouped.ExpandRepositoryPathWithValue("0.1", "0.1", "mygroup.co.nz/0.1.33"));
+
+            variableReleasesGrouped.TrimFromPath = trim;
+
+
+            // Release Per Folder
+            Assert.AreEqual("libs-release-local/myapp/0.1/33", variableReleasePerFolder.ExpandRepositoryPathWithValue("0.1", "0.1", "0.1.33"));
+
+            trim = variableReleasesGrouped.TrimFromPath;
+
+            variableReleasesGrouped.TrimFromPath = "myapp/";
+
+            Assert.AreEqual("libs-release-local/myapp/0.1/33", variableReleasePerFolder.ExpandRepositoryPathWithValue("0.1", "0.1", "0.1.33"));
+
+            variableReleasesGrouped.TrimFromPath = trim;
         }
     }
 }

@@ -225,15 +225,8 @@ namespace NZCustomsServiceExtension.Variables
                 // Format text
                 //folder.Text = artifactPrefix + (artifactPrefix.EndsWith("/") ? "" : "/") + folder.Text;
 
-                if (!string.IsNullOrEmpty(trimFromPath))
-                {
-                    folder.Text = folder.Text.Replace(trimFromPath, string.Empty);
-                }
-
-                if (variable.ReplaceSlashWithDot)
-                {
-                    folder.Text = folder.Text.Replace('/', '.');
-                }
+                folder.Text = variable.GetTrimmedPath(folder.Text, trimFromPath);
+                folder.Text = variable.GetReplaceSlashWithDot(folder.Text, trimFromPath);
             }
 
             return folders.OrderBy(s => ConvertToSortableNumber(s.Value)).ToArray();

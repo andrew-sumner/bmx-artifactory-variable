@@ -65,9 +65,7 @@ namespace NZCustomsServiceExtension.Actions
 
 
             Uri uri = new Uri(config.Server);
-
-            uri = new Uri(uri, variable.ExpandRepositoryPath(this.Context.ReleaseNumber, GetReleaseName()));
-            uri = new Uri(uri, this.ArtifactName);
+            uri = new Uri(uri, variable.ExpandRepositoryPathWithValue(this.Context.ReleaseNumber, GetReleaseName(), this.ArtifactName));
 
             this.LogInformation("config=" + config.Server);
 

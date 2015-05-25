@@ -89,29 +89,39 @@ namespace NZCustomsServiceExtension.Variables
         }
 
 
-        ///// <summary>
-        ///// Gets the Base URL based on the settings configured for the artifactory extension and this variable
-        ///// in the format http://artifactory:8081/artifactory
-        ///// </summary>
-        //[SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Reviewed.")]
-        //public string GetBaseURL()
-        //{
-        //    ArtifactoryConfigurer config = this.GetExtensionConfigurer();
-            
-        //    string url = config.Server;
-
-        //    if (url.EndsWith("/"))
-        //    {
-        //        url = url.Remove(url.Length - 1);
-        //    }
-                
-        //    return url;
-        //}
-
         public bool RepositoryPathRequiresExpanding()
         {
             return RepositoryPath.Contains("%RELNO%") || RepositoryPath.Contains("%RELNAME%");
         }
+
+        public string ExpandRepositoryPathWithValue(string releaseNumber, string releaseName, string selectedVersion)
+        {
+            StringBuilder path = new StringBuilder();
+            path.Append(ExpandRepositoryPath(releaseNumber, releaseName));
+
+            String trimFromPath = ExpandTrimFromPath(releaseNumber, releaseName);
+            if (!String.IsNullOrEmpty(trimFromPath) && path.ToString().StartsWith(trimFromPath))
+            {
+                path = new StringBuilder(path.ToString().Substring(0, trimFromPath.Length));
+            }
+
+            AppendPath(path, selectedVersion);
+
+            string value = path.ToString();
+
+            if (this.ReplaceSlashWithDot)
+            {
+                int index = value.LastIndexOf(".");
+
+                if (index > -1)
+                {
+                    value = value.Remove(index, 1).Insert(index, "/");
+                }
+            }
+
+            return value;
+        }
+
         /// <summary>
         /// Gets the RepositoryPath (without BaseURL) based on the settings configured for this variable
         /// in the format libs-release-local/nz.govt.customs/SmartViewer - with any %RELNO% or %RELNAME% 
@@ -121,26 +131,54 @@ namespace NZCustomsServiceExtension.Variables
         {
             StringBuilder path = new StringBuilder();
 
-            if (!String.IsNullOrEmpty(this.RepositoryKey))
+            AppendPath(path, this.RepositoryKey);
+            AppendPath(path, this.RepositoryPath);
+
+            ExpandVariables(path, releaseNumber, releaseName);
+
+            return path.ToString();
+        }
+
+        public string ExpandFilter(string releaseNumber, string releaseName)
+        {
+            StringBuilder filter = new StringBuilder();
+
+            AppendPath(filter, this.Filter);
+            ExpandVariables(filter, releaseNumber, releaseName);
+
+            return filter.ToString();
+        }
+
+        public string ExpandTrimFromPath(string releaseNumber, string releaseName)
+        {
+            StringBuilder trim = new StringBuilder();
+
+            AppendPath(trim, this.RepositoryKey);
+            AppendPath(trim, this.TrimFromPath);
+
+            if ((this.TrimFromPath ?? String.Empty).EndsWith("/")) 
             {
-                path.Append(this.RepositoryKey);
-                path.Append("/");
+                trim.Append("/");
             }
 
-            string rp = this.RepositoryPath;
+            ExpandVariables(trim, releaseNumber, releaseName);
 
-            if (rp.EndsWith("/"))
+            return trim.ToString();
+        }
+
+        private void AppendPath(StringBuilder path, string section)
+        {
+            section = RemoveSurroundingSlashes(section);
+
+            if (section.Length > 0)
             {
-                rp = rp.Substring(1);
+                path.Append(path.Length > 0 ? "/" : String.Empty);
+                path.Append(section);
             }
+        }
 
-            if (rp.EndsWith("/"))
-            {
-                rp = rp.Remove(path.Length - 1);
-            }
-
-            path.Append(rp);
-
+        private void ExpandVariables(StringBuilder path, string releaseNumber, string releaseName)
+        {
             // Format variables
             if (!string.IsNullOrEmpty(releaseNumber))
             {
@@ -152,43 +190,52 @@ namespace NZCustomsServiceExtension.Variables
                 path = path.Replace("%RELNAME%", releaseName);
             }
 
-            return path.ToString();
+            //return path;
         }
 
-        public string ExpandFilter(string releaseNumber, string releaseName)
+        private string RemoveSurroundingSlashes(string path)
         {
-            string filter = string.IsNullOrEmpty(this.Filter) ? string.Empty : this.Filter;
+            if (path == null) path = String.Empty;
 
-            // Format variables
-            if (!string.IsNullOrEmpty(releaseNumber))
+            if (path.EndsWith("/"))
             {
-                filter = filter.Replace("%RELNO%", releaseNumber);
+                path = path.Substring(1);
             }
 
-            if (!string.IsNullOrEmpty(releaseName))
+            if (path.EndsWith("/"))
             {
-                filter = filter.Replace("%RELNAME%", releaseName);
+                path = path.Remove(path.Length - 1);
             }
 
-            return filter;
+            return path;
         }
 
-        public string ExpandTrimFromPath(string releaseNumber, string releaseName)
+        public string GetTrimmedPath(string path, string trimFromPath)
         {
-            string trimFromPath = string.IsNullOrEmpty(this.TrimFromPath) ? string.Empty : this.TrimFromPath;
-
-            // Format variables
-            if (!string.IsNullOrEmpty(releaseNumber))
+            if (!string.IsNullOrEmpty(trimFromPath))
             {
-                trimFromPath = trimFromPath.Replace("%RELNO%", releaseNumber);
+                if (path.StartsWith(trimFromPath))
+                {
+                    path = path.Substring(trimFromPath.Length);
+                }
             }
 
-            if (!string.IsNullOrEmpty(releaseName))
+            return path;
+        }
+
+        public string GetReplaceSlashWithDot(string path, string trimFromPath)
+        {
+            if (this.ReplaceSlashWithDot)
             {
-                trimFromPath = trimFromPath.Replace("%RELNAME%", releaseName);
+                int index = path.LastIndexOf('/');
+
+                if (index > -1)
+                {
+                    path = path.Remove(index, 1).Insert(index, ".");
+                }
             }
 
-            return trimFromPath;
+            return path;
         }
 
         ///// <summary>
