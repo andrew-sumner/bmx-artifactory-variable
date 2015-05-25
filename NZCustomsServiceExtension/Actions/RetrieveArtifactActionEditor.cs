@@ -50,7 +50,7 @@ namespace NZCustomsServiceExtension.Actions
             base.CreateChildControls();
             this.artifactoryVariable = new DropDownList();
             this.artifactName = new ValidatingTextBox() { Width = 300 };
-            this.destinationFileName = new SourceControlFileFolderPicker() { ServerId = this.ServerId, DefaultText = "Current Directory and Item Name" };
+            this.destinationFileName = new SourceControlFileFolderPicker() { ServerId = this.ServerId, DefaultText = "Working Directory and Item Name" };
 
             this.Controls.Add(
                 new SlimFormField("Artifactory Variable:", this.artifactoryVariable) { HelpText = "Choose a specific artifactory variable, or all artifactory variables in build scope." },
