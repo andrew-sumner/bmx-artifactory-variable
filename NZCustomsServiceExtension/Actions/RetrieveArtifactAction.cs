@@ -103,9 +103,10 @@ namespace NZCustomsServiceExtension.Actions
                 srcStream = srcFileOps.OpenFile(srcFileName, FileMode.Open, FileAccess.Read);
                 destStream = destFileOps.OpenFile(destFileName, FileMode.Create, FileAccess.Write);
 
-                const int ONE_MB = 1048576;
+                //const int ONE_MB = 1048576;
+                const int TEN_KB = 10240;
 
-                byte[] buffer = new byte[ONE_MB];
+                byte[] buffer = new byte[TEN_KB];
                 int bytesRead;
 
                 while ((bytesRead = srcStream.Read(buffer, 0, buffer.Length)) > 0)
