@@ -82,17 +82,24 @@ namespace NZCustomsServiceExtension.Actions
 
             if (!DownloadFile(config, uri.ToString(), srcFileOps, srcFileName)) return;
             TransferFile(srcFileOps, srcFileName, destFileOps, destFileName);
+            MakeExecutable(destFileName);
+        }
 
-            if (this.MarkAsExecutable) 
+        private void MakeExecutable(string destFileName)
+        {
+            if (!this.MarkAsExecutable) return;
+
+            this.LogInformation("Make {0} executable", destFileName);
+
+            string fileName = Path.GetFileName(destFileName);
+            string filePath = destFileName.Remove(destFileName.Length - fileName.Length);
+
+            //int chmodRet = this.ExecuteCommandLine("/bin/bash", "-c \"if [[ \\\"`ls -1 *.sh 2>/dev/null`\\\" ]]; then chmod 0755 " + fileName + "; else exit 0; fi\"", filePath);
+
+            int chmodRet = this.ExecuteCommandLine("chmod", "chmod 0755 " + fileName, filePath);
+            if (chmodRet != 0)
             {
-                string fileName = Path.GetFileName(destFileName);
-                string filePath = Path.GetFullPath(destFileName);
-                
-                int chmodRet = this.ExecuteCommandLine("/bin/bash", "-c \"if [[ \\\"`ls -1 *.sh 2>/dev/null`\\\" ]]; then chmod 0755 " + fileName + "; else exit 0; fi\"", filePath);
-                if (chmodRet != 0)
-                {
-                    this.LogWarning("chmod return code indicates error: {0} (0x{0:X8})", chmodRet);
-                }
+                this.LogWarning("chmod return code indicates error: {0}", chmodRet);
             }
         }
 
