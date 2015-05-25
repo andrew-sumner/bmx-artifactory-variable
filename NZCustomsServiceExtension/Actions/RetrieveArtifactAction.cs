@@ -37,7 +37,7 @@ namespace NZCustomsServiceExtension.Actions
 
         public override string ToString()
         {
-            return string.Format("Retrieve the {0} artifact {1}", this.ArtifactName, this.DestinationFileName);
+            return string.Format(": Retrieve the {0} artifact {1}", this.ArtifactName, this.DestinationFileName);
         }
 
         protected ArtifactoryConfigurer GlobalConfig
@@ -69,12 +69,13 @@ namespace NZCustomsServiceExtension.Actions
 
             var srcFileOps = GetLocalFileOps();
             var destFileOps = GetRemoteFileOps();
-            
-            string onlyFileName = Path.GetFileName(this.DestinationFileName);
-            string folder = Path.GetDirectoryName(this.DestinationFileName);
 
+            if (String.IsNullOrEmpty(this.DestinationFileName)) this.DestinationFileName = null;
+
+            string onlyFileName = Path.GetFileName(this.DestinationFileName ?? this.ArtifactName);
+                        
             string srcFileName = srcFileOps.CombinePath(srcFileOps.GetBaseWorkingDirectory(), onlyFileName);
-            string destFileName = destFileOps.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, this.DestinationFileName); ;
+            string destFileName = destFileOps.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, this.DestinationFileName ?? this.ArtifactName); ;
 
 
             if (!DownloadFile(config, uri.ToString(), srcFileOps, srcFileName)) return;
