@@ -22,7 +22,7 @@ namespace UnitTests
         /// A test for getArguments
         /// </summary>
         [TestMethod]
-        [DeploymentItem("NZCustomsServiceExtension.dll")]
+        
         public void SaveVariableToArtifactoryTest()
         {
             SetVariableToArtifactoryPathAction var = new SetVariableToArtifactoryPathAction();
@@ -83,14 +83,14 @@ namespace UnitTests
         /// A test for getArguments
         /// </summary>
         [TestMethod]
-        [DeploymentItem("NZCustomsServiceExtension.dll")]
+        
         public void GetArgumentsTest()
         {
             string actual;
-            WGetFromArtifactoryAction_Accessor target;
+            WGetFromArtifactoryAction target;
             
             // A folder path must end with a forward slash
-            target = new WGetFromArtifactoryAction_Accessor()
+            target = new WGetFromArtifactoryAction()
             {
                 //OverrideArtifactoryServer = "http://nowhere",
                 AcceptList = "*.sh",
@@ -102,7 +102,7 @@ namespace UnitTests
             Assert.AreEqual("-m -e robots=off -nd -np -A*.sh http://nowhere/Cusmod/fred/", actual);
 
             // A file path must not end with a forward slash
-            target = new WGetFromArtifactoryAction_Accessor()
+            target = new WGetFromArtifactoryAction()
             {
                 //OverrideArtifactoryServer = "http://nowhere",
                 RepositoryPath = "Cusmod/fred/file.sh"

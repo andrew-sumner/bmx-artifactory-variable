@@ -135,7 +135,7 @@ namespace NZCustomsServiceExtension.Actions
         /// Get the arguments required for w-get
         /// </summary>
         /// <returns>List of arguments</returns>
-        private string GetWGetArguments()
+        internal string GetWGetArguments()
         {
             string arguments = "-m -e robots=off -nd -np";
 

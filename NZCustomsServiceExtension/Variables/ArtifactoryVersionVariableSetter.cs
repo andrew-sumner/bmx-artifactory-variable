@@ -185,7 +185,7 @@ namespace NZCustomsServiceExtension.Variables
         /// <param name="variable">Artifactory variable</param>
         /// <param name="releaseNumber">Release number</param>
         /// <returns>List of builds</returns>
-        private ListItem[] GetReleaseBuilds(ArtifactoryVersionVariable variable, string releaseNumber, string releaseName)
+        internal ListItem[] GetReleaseBuilds(ArtifactoryVersionVariable variable, string releaseNumber, string releaseName)
         {
 
             List<ListItem> folders = new List<ListItem>();

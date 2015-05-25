@@ -62,12 +62,11 @@ namespace UnitTests
         /// <summary>
         /// A test for GetReleaseBuilds using release number
         /// </summary>
-        [TestMethod]
-        [DeploymentItem("NZCustomsServiceExtension.dll")]
+        [TestMethod]        
         public void GetReleaseBuildsTestUsingReleaseNumber()
         {
             // This test is using live data which may change at any time!
-            ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
+            ArtifactoryVersionVariableSetter target = new ArtifactoryVersionVariableSetter();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
                 //ActionServer = "http://artifactory:8081/artifactory/",
@@ -87,11 +86,10 @@ namespace UnitTests
         /// A test for GetReleaseBuilds using release number
         /// </summary>
         [TestMethod]
-        [DeploymentItem("NZCustomsServiceExtension.dll")]
         public void GetReleaseBuildsTestUsingReleaseNumber2()
         {
             // This test is using live data which may change at any time!
-            ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
+            ArtifactoryVersionVariableSetter target = new ArtifactoryVersionVariableSetter();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
                 //ActionServer = "http://artifactory:8081/artifactory",
@@ -116,11 +114,10 @@ namespace UnitTests
         /// A test for GetReleaseBuilds using release number
         /// </summary>
         [TestMethod]
-        [DeploymentItem("NZCustomsServiceExtension.dll")]
         public void GetReleaseBuildsTestUsingReleaseNumber3()
         {
             // This test is using live data which may change at any time!
-            ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
+            ArtifactoryVersionVariableSetter target = new ArtifactoryVersionVariableSetter();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
                 //ActionServer = "http://artifactory:8081/artifactory",
@@ -143,12 +140,11 @@ namespace UnitTests
         /// <summary>
         /// A test for GetReleaseBuilds using release number
         /// </summary>
-        [TestMethod]
-        [DeploymentItem("NZCustomsServiceExtension.dll")]
+        [TestMethod]        
         public void GetReleaseBuildsTestDefaultToNotIncluded()
         {
             // This test is using live data which may change at any time!
-            ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
+            ArtifactoryVersionVariableSetter target = new ArtifactoryVersionVariableSetter();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
                 //ActionServer = "http://artifactory:8081/artifactory",
@@ -172,11 +168,11 @@ namespace UnitTests
         /// A test for GetReleaseBuilds using release name
         /// </summary>
         [TestMethod]
-        [DeploymentItem("NZCustomsServiceExtension.dll")]
+        
         public void GetReleaseBuildsTestUsingReleaseName()
         {
             // This test is using live data which may change at any time!
-            ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
+            ArtifactoryVersionVariableSetter target = new ArtifactoryVersionVariableSetter();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
                 //ActionServer = "http://artifactory:8081/artifactory",
@@ -198,11 +194,11 @@ namespace UnitTests
         /// A test for GetReleaseBuilds using release name
         /// </summary>
         [TestMethod]
-        [DeploymentItem("NZCustomsServiceExtension.dll")]
+        
         public void GetReleaseBuildsTestUsingReleaseName2()
         {
             // This test is using live data which may change at any time!
-            ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
+            ArtifactoryVersionVariableSetter target = new ArtifactoryVersionVariableSetter();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
                 //ActionServer = "http://artifactory:8081/artifactory",
@@ -224,11 +220,11 @@ namespace UnitTests
         /// A test for GetReleaseBuilds
         /// </summary>
         [TestMethod]
-        [DeploymentItem("NZCustomsServiceExtension.dll")]
+        
         public void GetReleaseBuildsTrimResultTest()
         {
             // This test is using live data which may change at any time!
-            ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
+            ArtifactoryVersionVariableSetter target = new ArtifactoryVersionVariableSetter();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
                 //ActionServer = "http://artifactory:8081/artifactory",
@@ -258,11 +254,11 @@ namespace UnitTests
         /// A test for GetReleaseBuilds using an invalid url
         /// </summary>
         [TestMethod]
-        [DeploymentItem("NZCustomsServiceExtension.dll")]
+        
         public void GetReleaseBuildsInvalidURLTest()
         {
             // This test is using live data which may change at any time!
-            ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
+            ArtifactoryVersionVariableSetter target = new ArtifactoryVersionVariableSetter();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
                 //ActionServer = "http://artifactory:8081/artifactory",
@@ -281,11 +277,11 @@ namespace UnitTests
         /// A test for GetReleaseBuilds checking order
         /// </summary>
         [TestMethod]
-        [DeploymentItem("NZCustomsServiceExtension.dll")]
+        
         public void GetReleaseBuildsCheckOrder()
         {
             // This test is using live data which may change at any time!
-            ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
+            ArtifactoryVersionVariableSetter target = new ArtifactoryVersionVariableSetter();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
                 //ActionServer = "http://artifactory:8081/artifactory",
@@ -336,11 +332,11 @@ namespace UnitTests
         /// A test for GetReleaseBuilds checking order
         /// </summary>
         [TestMethod]
-        [DeploymentItem("NZCustomsServiceExtension.dll")]
+        
         public void GetReleaseBuildsNoReleaseNumber()
         {
             // This test is using live data which may change at any time!
-            ArtifactoryVersionVariableSetter_Accessor target = new ArtifactoryVersionVariableSetter_Accessor();
+            ArtifactoryVersionVariableSetter target = new ArtifactoryVersionVariableSetter();
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
                 //ActionServer = "http://artifactory:8081/artifactory",
