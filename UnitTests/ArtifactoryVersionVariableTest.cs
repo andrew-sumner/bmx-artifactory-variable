@@ -71,7 +71,6 @@ namespace UnitTests
             DefaultToNotIncluded = false
         };
 
-
         [TestMethod]
         public void RepositoryPathRequiresExpanding()
         {

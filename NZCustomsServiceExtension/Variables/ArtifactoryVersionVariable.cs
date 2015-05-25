@@ -89,12 +89,12 @@ namespace NZCustomsServiceExtension.Variables
         }
 
 
-        public bool RepositoryPathRequiresExpanding()
+        internal bool RepositoryPathRequiresExpanding()
         {
             return RepositoryPath.Contains("%RELNO%") || RepositoryPath.Contains("%RELNAME%");
         }
 
-        public string ExpandRepositoryPathWithValue(string releaseNumber, string releaseName, string selectedVersion)
+        internal string ExpandRepositoryPathWithValue(string releaseNumber, string releaseName, string selectedVersion)
         {
             StringBuilder path = new StringBuilder();
             path.Append(ExpandRepositoryPath(releaseNumber, releaseName));
@@ -127,7 +127,7 @@ namespace NZCustomsServiceExtension.Variables
         /// in the format libs-release-local/nz.govt.customs/SmartViewer - with any %RELNO% or %RELNAME% 
         /// replaced with actual values
         /// </summary>
-        public string ExpandRepositoryPath(string releaseNumber, string releaseName)
+        internal string ExpandRepositoryPath(string releaseNumber, string releaseName)
         {
             StringBuilder path = new StringBuilder();
 
@@ -139,7 +139,7 @@ namespace NZCustomsServiceExtension.Variables
             return path.ToString();
         }
 
-        public string ExpandFilter(string releaseNumber, string releaseName)
+        internal string ExpandFilter(string releaseNumber, string releaseName)
         {
             StringBuilder filter = new StringBuilder();
 
@@ -149,7 +149,7 @@ namespace NZCustomsServiceExtension.Variables
             return filter.ToString();
         }
 
-        public string ExpandTrimFromPath(string releaseNumber, string releaseName)
+        internal string ExpandTrimFromPath(string releaseNumber, string releaseName)
         {
             StringBuilder trim = new StringBuilder();
 
@@ -166,7 +166,7 @@ namespace NZCustomsServiceExtension.Variables
             return trim.ToString();
         }
 
-        private void AppendPath(StringBuilder path, string section)
+        internal void AppendPath(StringBuilder path, string section)
         {
             section = RemoveSurroundingSlashes(section);
 
@@ -197,9 +197,9 @@ namespace NZCustomsServiceExtension.Variables
         {
             if (path == null) path = String.Empty;
 
-            if (path.EndsWith("/"))
+            if (path.StartsWith("/"))
             {
-                path = path.Substring(1);
+                path = path.Remove(1, 1);
             }
 
             if (path.EndsWith("/"))
@@ -210,7 +210,7 @@ namespace NZCustomsServiceExtension.Variables
             return path;
         }
 
-        public string GetTrimmedPath(string path, string trimFromPath)
+        internal string GetTrimmedPath(string path, string trimFromPath)
         {
             if (!string.IsNullOrEmpty(trimFromPath))
             {
@@ -223,7 +223,7 @@ namespace NZCustomsServiceExtension.Variables
             return path;
         }
 
-        public string GetReplaceSlashWithDot(string path, string trimFromPath)
+        internal string GetReplaceSlashWithDot(string path, string trimFromPath)
         {
             if (this.ReplaceSlashWithDot)
             {
@@ -268,7 +268,7 @@ namespace NZCustomsServiceExtension.Variables
         /// </summary>
         /// <param name="version">Version selected for the variable</param>
         /// <returns>Artifactory path</returns>
-        public static ArtifactoryVersionVariable GetVariableDeclaration(int applicationId, string artifactoryVariableName)
+        internal static ArtifactoryVersionVariable GetVariableDeclaration(int applicationId, string artifactoryVariableName)
         {
             // Get variable properties
             var settings = StoredProcs

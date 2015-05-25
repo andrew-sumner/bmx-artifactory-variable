@@ -62,11 +62,10 @@ namespace NZCustomsServiceExtension.Actions
 
             string variableValue = this.Context.Variables[this.ArtifactoryVariable];
 
-            Uri uri = new Uri(config.Server);
-            uri = new Uri(uri, variable.ExpandRepositoryPathWithValue(this.Context.ReleaseNumber, GetReleaseName(), variableValue));
-            uri = new Uri(uri, this.ArtifactName);
+            StringBuilder uri = new StringBuilder(config.Server);
 
-            this.LogInformation("config=" + config.Server);
+            variable.AppendPath(uri, variable.ExpandRepositoryPathWithValue(this.Context.ReleaseNumber, GetReleaseName(), variableValue));
+            variable.AppendPath(uri, this.ArtifactName);
 
             var srcFileOps = GetLocalFileOps();
             var destFileOps = GetRemoteFileOps();
