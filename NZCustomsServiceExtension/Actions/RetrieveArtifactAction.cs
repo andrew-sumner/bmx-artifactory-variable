@@ -143,7 +143,7 @@ namespace NZCustomsServiceExtension.Actions
                 if (destStream != null) destStream.Close();
             }
 
-            srcFileOps.DeleteFile(srcFileName);
+            //srcFileOps.DeleteFile(srcFileName);
         }
 
         private bool DownloadFile(ArtifactoryConfigurer config, string url, IFileOperationsExecuter srcFileOps, string srcFileName)
