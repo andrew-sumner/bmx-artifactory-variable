@@ -59,9 +59,12 @@ namespace NZCustomsServiceExtension.Actions
         {
             ArtifactoryVersionVariable variable = ArtifactoryVersionVariable.GetVariableDeclaration(this.Context.ApplicationId, this.ArtifactoryVariable);
             ArtifactoryConfigurer config = this.GlobalConfig;
-            
+
+            string variableValue = this.Context.Variables[this.ArtifactoryVariable];
+
             Uri uri = new Uri(config.Server);
-            uri = new Uri(uri, variable.ExpandRepositoryPathWithValue(this.Context.ReleaseNumber, GetReleaseName(), this.ArtifactName));
+            uri = new Uri(uri, variable.ExpandRepositoryPathWithValue(this.Context.ReleaseNumber, GetReleaseName(), variableValue));
+            uri = new Uri(uri, this.ArtifactName);
 
             this.LogInformation("config=" + config.Server);
 
