@@ -199,7 +199,7 @@ namespace NZCustomsServiceExtension.Variables
 
             if (path.StartsWith("/"))
             {
-                path = path.Remove(1, 1);
+                path = path.Remove(0, 1);
             }
 
             if (path.EndsWith("/"))
