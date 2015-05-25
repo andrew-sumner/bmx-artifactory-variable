@@ -85,69 +85,6 @@ namespace NZCustomsServiceExtension.Actions
             MakeExecutable(destFileName);
         }
 
-        private void MakeExecutable(string destFileName)
-        {
-            if (!this.MarkAsExecutable) return;
-
-            this.LogInformation("Make {0} executable", destFileName);
-
-            string fileName = Path.GetFileName(destFileName);
-            string filePath = destFileName.Remove(destFileName.Length - fileName.Length);
-
-            //int chmodRet = this.ExecuteCommandLine("/bin/bash", "-c \"if [[ \\\"`ls -1 *.sh 2>/dev/null`\\\" ]]; then chmod 0755 " + fileName + "; else exit 0; fi\"", filePath);
-
-            string cmd = "chmod";
-            string param = "0755 " + fileName;
-            int chmodRet = this.ExecuteCommandLine(cmd, param, filePath);
-            if (chmodRet != 0)
-            {
-                this.LogWarning("chmod return code indicates error: {0}", chmodRet);
-            }
-        }
-
-        private string GetReleaseName()
-        {
-            var execution = StoredProcs
-                     .Builds_GetExecution(this.Context.ExecutionId)
-                     .Execute().FirstOrDefault();
-
-            return execution.Release_Name;
-        }
-
-        private void TransferFile(IFileOperationsExecuter srcFileOps, string srcFileName, IFileOperationsExecuter destFileOps, string destFileName)
-        {
-            this.LogInformation("Transfer {0} to {1} over SSH", srcFileName, destFileName);
-            
-            Stream srcStream = null;
-            Stream destStream = null;
-
-            try
-            {
-                srcStream = File.Open(srcFileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-                //srcStream = srcFileOps.OpenFile(srcFileName, FileMode.Open, FileAccess.Read);
-                destStream = destFileOps.OpenFile(destFileName, FileMode.Create, FileAccess.Write);
-
-                //const int ONE_MB = 1048576;
-                const int TEN_KB = 10240;
-
-                byte[] buffer = new byte[TEN_KB];
-                int bytesRead;
-
-                while ((bytesRead = srcStream.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    destStream.Write(buffer, 0, bytesRead);
-                }
-            }
-            finally
-            {
-                if (srcStream != null) srcStream.Close();
-                if (destStream != null) destStream.Close();
-            }
-
-            //srcFileOps.DeleteFile(srcFileName);
-        }
-
         private bool DownloadFile(ArtifactoryConfigurer config, string url, IFileOperationsExecuter srcFileOps, string srcFileName)
         {
             this.LogInformation("Downloading {0} artifact to {1}", url, srcFileName);
@@ -167,6 +104,62 @@ namespace NZCustomsServiceExtension.Actions
             }
 
             return true;
+        }
+        
+        private void TransferFile(IFileOperationsExecuter srcFileOps, string srcFileName, IFileOperationsExecuter destFileOps, string destFileName)
+        {
+            this.LogInformation("Transfer {0} to {1} over SSH", srcFileName, destFileName);
+            
+            FileStream srcStream = null;
+            Stream destStream = null;
+
+            try
+            {
+                srcStream = File.Open(srcFileName, FileMode.Open, FileAccess.Read);
+                //srcStream = srcFileOps.OpenFile(srcFileName, FileMode.Open, FileAccess.Read);
+                destStream = destFileOps.OpenFile(destFileName, FileMode.Create, FileAccess.Write);
+
+                const int KB_32 = 32 * 1024;
+                Byte[] buffer = new Byte[KB_32]; 
+                int bytesRead;
+
+                while ((bytesRead = srcStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    destStream.Write(buffer, 0, bytesRead);
+                }
+            }
+            finally
+            {
+                if (srcStream != null) srcStream.Close();
+                if (destStream != null) destStream.Close();
+            }
+
+            srcFileOps.DeleteFile(srcFileName);
+        }
+
+        private void MakeExecutable(string destFileName)
+        {
+            if (!this.MarkAsExecutable) return;
+
+            this.LogInformation("Make {0} executable", destFileName);
+
+            string fileName = Path.GetFileName(destFileName);
+            string filePath = destFileName.Remove(destFileName.Length - fileName.Length);
+
+            int chmodRet = this.ExecuteCommandLine("chmod", "0755 " + fileName, filePath);
+            if (chmodRet != 0)
+            {
+                this.LogWarning("chmod return code indicates error: {0}", chmodRet);
+            }
+        }
+
+        private string GetReleaseName()
+        {
+            var execution = StoredProcs
+                     .Builds_GetExecution(this.Context.ExecutionId)
+                     .Execute().FirstOrDefault();
+
+            return execution.Release_Name;
         }
 
         protected IFileOperationsExecuter GetRemoteFileOps()

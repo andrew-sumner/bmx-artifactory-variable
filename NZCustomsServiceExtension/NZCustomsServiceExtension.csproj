@@ -77,10 +77,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Actions\SetVariableToArtifactoryPathAction.cs" />
-    <Compile Include="Actions\WGetFromArtifactoryAction.cs" />
-    <Compile Include="Actions\WGetFromArtifactoryActionEditor.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="ArtifactoryConfigurer.cs" />
     <Compile Include="ArtifactoryConfigurerEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
