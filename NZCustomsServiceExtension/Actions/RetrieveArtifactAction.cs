@@ -87,7 +87,7 @@ namespace NZCustomsServiceExtension.Actions
             {
                 string fileName = Path.GetFileName(destFileName);
                 string filePath = Path.GetFullPath(destFileName);
-
+                
                 int chmodRet = this.ExecuteCommandLine("/bin/bash", "-c \"if [[ \\\"`ls -1 *.sh 2>/dev/null`\\\" ]]; then chmod 0755 " + fileName + "; else exit 0; fi\"", filePath);
                 if (chmodRet != 0)
                 {
