@@ -16,8 +16,8 @@ using Inedo.BuildMaster.Data;
 namespace NZCustomsServiceExtension.Actions
 {
     [ActionProperties(
-    "Retrieve Artifact",
-    "Retrieves an atifact from a repository (Supports SSH).")]
+    "Retrieve Artifact Over SSH",
+    "Retrieves an atifact from an Artifactory repository. Actually downloads to BuildMaster Server and then transfers file.")]
     [Tag("NZCustomsService")]
     [CustomEditor(typeof(RetrieveArtifactActionEditor))]
     public class RetrieveArtifactAction : AgentBasedActionBase
@@ -57,13 +57,9 @@ namespace NZCustomsServiceExtension.Actions
 
         protected override void Execute()
         {
-            this.LogInformation("ProcessRemoteCommand");
-
-            
             ArtifactoryVersionVariable variable = ArtifactoryVersionVariable.GetVariableDeclaration(this.Context.ApplicationId, this.ArtifactoryVariable);
             ArtifactoryConfigurer config = this.GlobalConfig;
-
-
+            
             Uri uri = new Uri(config.Server);
             uri = new Uri(uri, variable.ExpandRepositoryPathWithValue(this.Context.ReleaseNumber, GetReleaseName(), this.ArtifactName));
 
@@ -77,9 +73,9 @@ namespace NZCustomsServiceExtension.Actions
 
             string srcFileName = srcFileOps.CombinePath(srcFileOps.GetBaseWorkingDirectory(), onlyFileName);
             string destFileName = destFileOps.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, this.DestinationFileName); ;
-            
-                        
-            if (!DownloadFile(config, uri.ToString(), srcFileName)) return;
+
+
+            if (!DownloadFile(config, uri.ToString(), srcFileOps, srcFileName)) return;
             TransferFile(srcFileOps, srcFileName, destFileOps, destFileName);            
         }
 
@@ -118,9 +114,10 @@ namespace NZCustomsServiceExtension.Actions
                 if (destStream != null) destStream.Close();
             }
 
+            srcFileOps.DeleteFile(srcFileName);
         }
 
-        private bool DownloadFile(ArtifactoryConfigurer config, string url, string srcFileName)
+        private bool DownloadFile(ArtifactoryConfigurer config, string url, IFileOperationsExecuter srcFileOps, string srcFileName)
         {
             this.LogInformation("Downloading {0} artifact to {1}", url, srcFileName);
 
@@ -129,6 +126,7 @@ namespace NZCustomsServiceExtension.Actions
 
             try
             {
+                srcFileOps.DeleteFile(srcFileName);
                 req.DownloadFile(url, srcFileName);
             }
             catch (Exception ex)
