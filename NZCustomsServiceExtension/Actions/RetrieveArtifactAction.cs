@@ -37,7 +37,7 @@ namespace NZCustomsServiceExtension.Actions
 
         public override string ToString()
         {
-            return string.Format(": Retrieve the {0} artifact {1}", this.ArtifactName, this.DestinationFileName);
+            return string.Format("Retrieve {0} artifact from Artifactory", this.ArtifactName, this.DestinationFileName);
         }
 
         protected ArtifactoryConfigurer GlobalConfig
