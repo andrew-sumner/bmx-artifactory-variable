@@ -16,6 +16,7 @@ namespace NZCustomsServiceExtension.Predicates
     using Inedo.Web.Controls;
     using NZCustomsServiceExtension.Variables;
     using System.Web;
+    using System.Linq;
 
     /// <summary>
     /// Predicate editor.
@@ -75,11 +76,19 @@ namespace NZCustomsServiceExtension.Predicates
             {
                 var result = StoredProcs.Plans_GetActionGroup(id)
                                    .Execute();
-                                   //.ActionGroupActions_Extended
-                                   
-                                   //.ApplicationDeploymentPlans
-                                   //.First()
-                                   //.Application_Id;
+
+                var iter = result.ActionGroupUsage_Slim.GetEnumerator();
+                while (iter.MoveNext()) 
+                {
+                    applicationId = iter.Current.Application_Id;
+                }
+                
+                applicationId = StoredProcs.Plans_GetActionGroup(id)
+                                  .Execute()
+                                  .ActionGroupUsage_Slim
+                                  .FirstOrDefault()
+                                  .Application_Id;
+                
             }
  
             if (applicationId != null)
