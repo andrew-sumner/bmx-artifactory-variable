@@ -17,8 +17,9 @@ namespace NZCustomsServiceExtension.Predicates
     /// BuildMaster predicate to check that a variable has a value
     /// </summary>
     [PredicateProperties(
-        "Variable Has Value Predicate (NZCustomsService)",
+        "Artifactory Variable Has Value (NZCustomsService)",
         "A predicate that tests whether a variable contains a value.")]
+    [Tag("NZCustomsService")]
     [CustomEditor(typeof(VariableHasValuePredicateEditor))]
     public sealed class VariableHasValuePredicate : PredicateBase
     {
