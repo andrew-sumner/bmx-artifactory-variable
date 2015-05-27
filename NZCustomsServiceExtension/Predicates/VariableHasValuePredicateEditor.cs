@@ -72,28 +72,19 @@ namespace NZCustomsServiceExtension.Predicates
             int id;
             int? applicationId = null;
 
+            //Predicates are not directly tied to applications anymore as of v4.3 because of global plans. However, if the plan is in a single application you can get application id as follows:
             if (int.TryParse(HttpContext.Current.Request.QueryString["planActionGroupId"], out id))
             {
-                var result = StoredProcs.Plans_GetActionGroup(id)
-                                   .Execute();
-
-                var iter = result.ActionGroupUsage_Slim.GetEnumerator();
-                while (iter.MoveNext()) 
-                {
-                    applicationId = iter.Current.Application_Id;
-                }
-                
                 applicationId = StoredProcs.Plans_GetActionGroup(id)
                                   .Execute()
                                   .ActionGroupUsage_Slim
                                   .FirstOrDefault()
                                   .Application_Id;
-                
             }
  
             if (applicationId != null)
             {
-                this.variableNameDd = new DropDownList();// { Width = 300 };
+                this.variableNameDd = new DropDownList();
 
                 this.Controls.Add(
                     new SlimFormField("Variable:", this.variableNameDd) { HelpText = "The name of the artifactory variable - requires that you have defined a build scoped Artifactory variable." }

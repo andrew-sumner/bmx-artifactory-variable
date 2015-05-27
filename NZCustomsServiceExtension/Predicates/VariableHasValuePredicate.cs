@@ -10,6 +10,7 @@ namespace NZCustomsServiceExtension.Predicates
     using Inedo.BuildMaster.Extensibility.Actions;
     using Inedo.BuildMaster.Extensibility.Predicates;
     using Inedo.BuildMaster.Web;
+    using System.Linq;
     using NZCustomsServiceExtension.Variables;
 
     /// <summary>
@@ -34,18 +35,13 @@ namespace NZCustomsServiceExtension.Predicates
         /// <returns>True if variable contains a value</returns>
         public override bool Evaluate(IActionExecutionContext context)
         {
-            if (context.Variables.ContainsKey(this.VariableName))
-            {
-                // TODO: How get default value for variable?
-                if (context.Variables[this.VariableName] == ArtifactoryVersionVariableSetter.NotIncluded)
-                {
-                    return false;
-                }
+            var variable = Util.Variables.EnumerateVariables().FirstOrDefault(s => s.Name == this.VariableName);
+            
+            if (variable == null) return false;
+            if (string.IsNullOrEmpty(variable.Value)) return false;
+            if (variable.Value == ArtifactoryVersionVariableSetter.NotIncluded) return false;
 
-                return !string.IsNullOrEmpty(context.Variables[this.VariableName]);
-            }
-
-            return false;
+            return true;
         }
 
         /// <summary>
