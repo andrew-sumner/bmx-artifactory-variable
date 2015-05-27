@@ -35,11 +35,30 @@ namespace NZCustomsServiceExtension.Predicates
         /// <returns>True if variable contains a value</returns>
         public override bool Evaluate(IActionExecutionContext context)
         {
-            var variable = Util.Variables.EnumerateVariables().FirstOrDefault(s => s.Name == this.VariableName);
+            var iter = Util.Variables.EnumerateVariables().GetEnumerator();
+            while (iter.MoveNext()) 
+            {
+                string name = iter.Current.Name;
+            }
+
+            var variable = StoredProcs.Variables_GetVariableValues(
+                Environment_Id: context.EnvironmentId, Server_Id: null, 
+                ApplicationGroup_Id: context.ApplicationGroupId, Application_Id: context.ApplicationId, 
+                Deployable_Id: context.DeployableId,
+                Release_Number: context.ReleaseNumber, Build_Number: context.BuildNumber,
+                Execution_Id: context.ExecutionId).Execute();
+
+            var iter2 = variable.GetEnumerator();
+            while (iter2.MoveNext())
+            {
+                string name = iter2.Current.Variable_Name;
+            }
+
+            //var variable = Util.Variables.EnumerateVariables().FirstOrDefault(s => s.Name == this.VariableName);
             
-            if (variable == null) return false;
-            if (string.IsNullOrEmpty(variable.Value)) return false;
-            if (variable.Value == ArtifactoryVersionVariableSetter.NotIncluded) return false;
+            //if (variable == null) return false;
+            //if (string.IsNullOrEmpty(variable.Value)) return false;
+            //if (variable.Value == ArtifactoryVersionVariableSetter.NotIncluded) return false;
 
             return true;
         }
