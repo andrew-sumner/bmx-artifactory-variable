@@ -105,40 +105,8 @@ namespace NZCustomsServiceExtension.Variables
         /// Extract the application id from the URL
         /// </summary>
         /// <returns>Application Id</returns>
-        public static int GetApplicationIdFromUrl()
+        private static int GetApplicationIdFromUrl()
         {
-            int applicationId;
-            //int applicationId = GetApplicationIdFromQuery();
-
-            //if (applicationId < 0) 
-            //{
-                applicationId = GetApplicationIdFromPath();
-            //}
-
-            if (applicationId < 0) 
-            {
-                throw new Exception(String.Format("Unable to find ApplicationId in URL {0}", HttpContext.Current.Request.Url.OriginalString));
-            }
-
-            return applicationId;
-        }
-
-        private static int GetApplicationIdFromQuery() {
-            string url = HttpContext.Current.Request.Url.Query;
-            string[] parts = url.Split(new char[] { '?', '&', '=' }, StringSplitOptions.RemoveEmptyEntries);
-
-            for (int i = 0; i < parts.Length - 1; i++)
-            {
-                if (parts[i].ToLower() == "applicationid")
-                {
-                    return int.Parse(parts[i + 1]);
-                }
-            }
-
-            return -1;
-        }
-
-        private static int GetApplicationIdFromPath() {
             string url = HttpContext.Current.Request.Url.AbsolutePath;
 
             string[] parts = url.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);

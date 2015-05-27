@@ -238,30 +238,21 @@ namespace NZCustomsServiceExtension.Variables
             return path;
         }
 
-        ///// <summary>
-        ///// Gets the server name from the XML returned by the ExtensionConfiguration_GetConfiguration call for the Artifactory extension
-        ///// </summary>
-        //private string GetArtifactoryExtensionArtifactoryUrl()
-        //{
-        //    var settings = StoredProcs
-        //                   .ExtensionConfiguration_GetConfiguration("Inedo.BuildMasterExtensions.Artifactory.ArtifactoryConfigurer,Artifactory", null)
-        //                   .Execute()
-        //                   .FirstOrDefault()
-        //                   .Extension_Configuration;
+        public static ArtifactVersion ExtractReleaseAndBuildNumbers(string version)
+        {
+            ArtifactVersion value = new ArtifactVersion();
 
-        //    XmlDocument xml = new XmlDocument();
-        //    xml.LoadXml(settings);
+            int index = version.LastIndexOf('/');
+            if (index <= 0) index = version.LastIndexOf('.'); 
 
-        //    XmlNode node = xml.SelectSingleNode("//Properties/@Server");
+            if (index > 0)
+            {
+                value.ReleaseNameOrNumber = version.Substring(0, index);
+                value.BuildNumber = version.Substring(index + 1);
+            }
 
-        //    if (node == null)
-        //    {
-        //        return null;
-        //    }
-
-        //    return node.Value;
-        //}
-
+            return value;
+        }
 
         /// <summary>
         /// Create and populate ArtifactoryVersionVariable from settings in database for this application
@@ -278,34 +269,20 @@ namespace NZCustomsServiceExtension.Variables
                      .FirstOrDefault()
                      .Variable_Configuration;
 
-            XmlDocument xml = new XmlDocument();
-            xml.LoadXml(settings);
+            return (ArtifactoryVersionVariable)Util.Persistence.DeserializeFromPersistedObjectXml(settings);
 
-            return new ArtifactoryVersionVariable
-            {
-                RepositoryKey = xml.SelectSingleNode("//Properties/@RepositoryKey").Value,
-                RepositoryPath = xml.SelectSingleNode("//Properties/@RepositoryPath").Value,
-                Filter = xml.SelectSingleNode("//Properties/@Filter").Value,
-                TrimFromPath = xml.SelectSingleNode("//Properties/@TrimFromPath").Value,
-                ReplaceSlashWithDot = bool.Parse(xml.SelectSingleNode("//Properties/@ReplaceSlashWithDot").Value),
-                DefaultToNotIncluded = bool.Parse(xml.SelectSingleNode("//Properties/@DefaultToNotIncluded").Value)
-            };
-        }
+            //XmlDocument xml = new XmlDocument();
+            //xml.LoadXml(settings);
 
-        public static ArtifactVersion ExtractReleaseAndBuildNumbers(string version)
-        {
-            ArtifactVersion value = new ArtifactVersion();
-
-            int index = version.LastIndexOf('/');
-            if (index <= 0) index = version.LastIndexOf('.'); 
-
-            if (index > 0)
-            {
-                value.ReleaseNameOrNumber = version.Substring(0, index);
-                value.BuildNumber = version.Substring(index + 1);
-            }
-
-            return value;
+            //return new ArtifactoryVersionVariable
+            //{
+            //    RepositoryKey = xml.SelectSingleNode("//Properties/@RepositoryKey").Value,
+            //    RepositoryPath = xml.SelectSingleNode("//Properties/@RepositoryPath").Value,
+            //    Filter = xml.SelectSingleNode("//Properties/@Filter").Value,
+            //    TrimFromPath = xml.SelectSingleNode("//Properties/@TrimFromPath").Value,
+            //    ReplaceSlashWithDot = bool.Parse(xml.SelectSingleNode("//Properties/@ReplaceSlashWithDot").Value),
+            //    DefaultToNotIncluded = bool.Parse(xml.SelectSingleNode("//Properties/@DefaultToNotIncluded").Value)
+            //};
         }
 
         public static ListItem[] GetArtifactoryVariablesInBuildScope(int applicationId)

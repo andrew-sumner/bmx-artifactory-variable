@@ -9,6 +9,7 @@ namespace UnitTests
     using System;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using NZCustomsServiceExtension.Variables;
+    using System.IO;
     
     /// <summary>
     /// This is a test class for ArtifactoryVersionVariableTest and is intended
@@ -70,6 +71,39 @@ namespace UnitTests
             ReplaceSlashWithDot = true,
             DefaultToNotIncluded = false
         };
+
+        //TODO
+        // predicate working
+        // transfer file prepending characters
+        // location of "current directory"
+        [TestMethod]
+        public void test()
+        {
+            FileStream srcStream = null;
+            Stream destStream = null;
+
+            try
+            {
+                srcStream = File.Open("c:/temp/trial.sh", FileMode.Open, FileAccess.Read);
+                destStream = File.Open("c:/temp/trial2.sh", FileMode.Create, FileAccess.Write);
+
+                //const int ONE_MB = 1048576;
+                //const int TEN_KB = 10240;
+
+                Byte[] buffer = new Byte[32 * 1024]; // a 32KB-sized buffer is the most efficient
+                int bytesRead;
+
+                while ((bytesRead = srcStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    destStream.Write(buffer, 0, bytesRead);
+                }
+            }
+            finally
+            {
+                if (srcStream != null) srcStream.Close();
+                if (destStream != null) destStream.Close();
+            }   
+        }
 
         [TestMethod]
         public void RepositoryPathRequiresExpanding()

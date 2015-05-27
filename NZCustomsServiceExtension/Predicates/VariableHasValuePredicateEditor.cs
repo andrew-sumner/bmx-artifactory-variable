@@ -15,6 +15,7 @@ namespace NZCustomsServiceExtension.Predicates
     using Inedo.BuildMaster.Web.Controls.Extensions;
     using Inedo.Web.Controls;
     using NZCustomsServiceExtension.Variables;
+    using System.Web;
 
     /// <summary>
     /// Predicate editor.
@@ -24,7 +25,8 @@ namespace NZCustomsServiceExtension.Predicates
         /// <summary>
         /// Variable name text box
         /// </summary>
-        private DropDownList variableName;
+        private DropDownList variableNameDd = null;
+        private ValidatingTextBox variableNameTxt = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VariableHasValuePredicateEditor"/> class.
@@ -42,7 +44,9 @@ namespace NZCustomsServiceExtension.Predicates
             this.EnsureChildControls();
 
             var v = (VariableHasValuePredicate)extension;
-            this.variableName.Text = v.VariableName;
+
+            if (this.variableNameDd != null) this.variableNameDd.Text = v.VariableName;
+            if (this.variableNameTxt != null) this.variableNameTxt.Text = v.VariableName;
         }
 
         /// <summary>
@@ -55,7 +59,7 @@ namespace NZCustomsServiceExtension.Predicates
 
             return new VariableHasValuePredicate
             {
-                VariableName = this.variableName.Text
+                VariableName = (this.variableNameDd == null ? this.variableNameTxt.Text : this.variableNameDd.Text)
             };
         }
 
@@ -64,13 +68,39 @@ namespace NZCustomsServiceExtension.Predicates
         /// </summary>
         protected override void CreateChildControls()
         {
-            this.variableName = new DropDownList();// { Width = 300 };
-            
-            this.Controls.Add(
-                new SlimFormField("Variable:", this.variableName) { HelpText = "The name of the artifactory variable - requires that you have defined a build scoped Artifactory variable." }
-            );
+            int id;
+            int? applicationId = null;
 
-            this.variableName.Items.AddRange(ArtifactoryVersionVariable.GetArtifactoryVariablesInBuildScope(ArtifactoryVersionVariableSetter.GetApplicationIdFromUrl()));
+            if (int.TryParse(HttpContext.Current.Request.QueryString["planActionGroupId"], out id))
+            {
+                var result = StoredProcs.Plans_GetActionGroup(id)
+                                   .Execute();
+                                   //.ActionGroupActions_Extended
+                                   
+                                   //.ApplicationDeploymentPlans
+                                   //.First()
+                                   //.Application_Id;
+            }
+ 
+            if (applicationId != null)
+            {
+                this.variableNameDd = new DropDownList();// { Width = 300 };
+
+                this.Controls.Add(
+                    new SlimFormField("Variable:", this.variableNameDd) { HelpText = "The name of the artifactory variable - requires that you have defined a build scoped Artifactory variable." }
+                );
+
+
+                this.variableNameDd.Items.AddRange(ArtifactoryVersionVariable.GetArtifactoryVariablesInBuildScope(applicationId.Value));
+            }
+            else
+            {
+                this.variableNameTxt = new ValidatingTextBox();
+
+                this.Controls.Add(
+                    new SlimFormField("Variable:", this.variableNameTxt) { HelpText = "The name of the artifactory variable - requires that you have defined a build scoped Artifactory variable." }
+                );
+            }
         }
     }
 }
