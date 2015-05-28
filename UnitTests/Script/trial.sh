@@ -1,4 +1,4 @@
-#ignore this line, it gets corrupted
+#!/bin/sh
 echo "Hello World, we've made it!"
 ls
 pwd
