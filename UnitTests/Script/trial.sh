@@ -1,4 +1,4 @@
 #!/bin/sh
-echo "Hello World, we've made it!?"
+echo "Allo Allo, made it have we?"
 ls
 pwd
