@@ -68,7 +68,7 @@ namespace NZCustomsServiceExtension.Actions
         /// <summary>
         /// Create action from form
         /// </summary>
-        /// <returns>new WGetFromArtifactoryAction</returns>
+        /// <returns>new ActionBase</returns>
         public override ActionBase CreateFromForm()
         {
             this.EnsureChildControls();
@@ -109,7 +109,7 @@ namespace NZCustomsServiceExtension.Actions
                 new SlimFormField("Artifactory Variable:", this.artifactoryVariable) { HelpText = "Choose a specific artifactory variable, or all artifactory variables in build scope." },
                 new SlimFormField("Dry Run:", this.dryRun) { HelpText = "Checking this option means that this action will only log what it would delete, unchecking it will cause the action to actually delete artifacts from Artifactory." },
                 new SlimFormField("Builds To Keep"),
-                new SlimFormField("Per Envrionment:", this.buildsToKeep) { HelpText = "Number of rejected builds to keep per envrionment, this allows reverting to a previous build." },
+                new SlimFormField("Per Envrionment:", this.buildsToKeep) { HelpText = "Number of builds to keep per envrionment.  Keep this at a level that will allow reverting to a previous builds if required, even if that build is no longer active." },
                 new SlimFormField("Final Envrionment:", this.buildsToKeepFinal) { HelpText = "Could be read as how many production releases should we keep in the archive." }
             );
 

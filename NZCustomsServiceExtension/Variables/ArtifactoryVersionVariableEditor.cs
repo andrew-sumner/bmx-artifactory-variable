@@ -114,17 +114,17 @@ namespace NZCustomsServiceExtension.Variables
             this.filter = new ValidatingTextBox { Width = 150 };
             this.trimFromPath = new ValidatingTextBox { Width = 250 };
             this.replaceSlashWithDot = new CheckBox { Width = 250, Text = "Replace '/' with '.'" };
-            this.defaultToNotIncluded = new CheckBox { Width = 250, Text = "Default to (Not Included)" };
+            this.defaultToNotIncluded = new CheckBox { Width = 250, Text = "Default to '" + ArtifactoryVersionVariableSetter.NotIncluded + "'" };
 
             //new SlimFormField("Help", server) { "Ensure 'Scope' is set to Build and 'Default Value is Required' is checked." },
             this.Controls.Add(
                 new SlimFormField("IMPORTANT") { InnerHtml = "<i>Ensure 'Scope' is set to Build and 'Default Value is Required' is checked.</i>" },
                 new SlimFormField("Repository:", this.repositoryKey) { HelpText = "The name of the repository the artifact is stored in." },
-                new SlimFormField("Repository Path:", this.repositoryPath) { HelpText = "The path to the folder that contains the list of builds.<br>Supports use of the %RELNO% and %RELNAME% variables <i>(token for active release(s) rather than current release)</i>." },
-                new SlimFormField("Filter:", this.filter) { HelpText = "If builds for all releases placed in one folder, use this filter to only include active release related items (eg %RELNO%..*).<br><br><i>Note: This is a regular expression.</i>" },
+                new SlimFormField("Repository Path:", this.repositoryPath) { HelpText = "The path to the folder that contains the list of builds.  Supports use of the %RELNO% and %RELNAME% variables (token for active release(s) rather than current release) eg if builds are in a seperate folder per release then you might use: group/name/%RELNO%" },
+                new SlimFormField("Filter:", this.filter) { HelpText = "If builds for all releases placed in one folder, use this filter to only include active release related items (eg %RELNO%..*).  Note: This is a regular expression" },
                 new SlimFormField("Trim From Path:", this.trimFromPath) { HelpText = "To strip the artifactory path details from the list items that this control displays, enter the text that you wish removed from the start of the item.  Often this will be identical to the Repository Path setting." },
-                new SlimFormField("Version Format:", this.replaceSlashWithDot) { HelpText = "When checked will replace / with . in list item, eg 1.0/22 will become to 1.0.22 - only useful when builds are kept in seperate release folders rather than all in one folder" },
-                new SlimFormField("Default Value: ", this.defaultToNotIncluded) { HelpText = "When unchceck will default to the latest build (last item in list), when checked not select a build." }
+                new SlimFormField("Version Format:", this.replaceSlashWithDot) { HelpText = "When checked will replace / with . in list item, eg 1.0/22 will become to 1.0.22.  Should only be set when there is a / in the list being displayed to the user otherwise there could be problems decoding the version number later." },
+                new SlimFormField("Default Value: ", this.defaultToNotIncluded) { HelpText = "When unchceck will default to the latest build (last item in list), when checked will default to (Not included)." }
             );
 
             ArtifactoryApi artifactory = new ArtifactoryApi(this.GlobalConfig);

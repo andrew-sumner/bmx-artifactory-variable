@@ -18,6 +18,8 @@ namespace NZCustomsServiceExtension.Variables
     using System.Collections.Generic;
     using System.Web.UI.WebControls;
     using System.Text;
+    using Inedo.BuildMaster.Data.StoredProcedures;
+    using Inedo.BuildMaster.Extensibility.Actions;
 
     /// <summary>
     /// Artifactory build variable.  Allows selection of a specific build in Artifactory.
@@ -293,6 +295,16 @@ namespace NZCustomsServiceExtension.Variables
                     .Where(s => s.Variable_Configuration.Contains("NZCustomsServiceExtension.Variables.ArtifactoryVersionVariable"))
                     .Select(s => new ListItem(s.Variable_Name))
                     .ToArray();
+        }
+
+        public static Tables.Variable_Values GetVariableValue(IActionExecutionContext context, string variableName)
+        {
+            return StoredProcs.Variables_GetVariableValues(
+                Environment_Id: context.EnvironmentId, Server_Id: null,
+                ApplicationGroup_Id: context.ApplicationGroupId, Application_Id: context.ApplicationId,
+                Deployable_Id: context.DeployableId,
+                Release_Number: context.ReleaseNumber, Build_Number: context.BuildNumber,
+                Execution_Id: context.ExecutionId).Execute().FirstOrDefault(v => v.Variable_Name == variableName);
         }
     }
 

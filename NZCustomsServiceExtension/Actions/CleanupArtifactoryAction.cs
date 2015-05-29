@@ -169,6 +169,7 @@ namespace NZCustomsServiceExtension.Actions
 
                     foreach (var execution in executions)
                     {
+                        //TODO: Call ArtifactoryAction.GetVaribleValue
                         var variableValue = StoredProcs.Variables_GetVariableValues(
                                                 Environment_Id: execution.Environment_Id,
                                                 Server_Id: null,

@@ -18,8 +18,6 @@ namespace NZCustomsServiceExtension.Actions
         private SourceControlFileFolderPicker destinationFileName;
         private CheckBox markAsExecutable;
 
-        //private ValidatingTextBox ffpFileName;
-
         public RetrieveArtifactActionEditor()
         {
         }
@@ -58,13 +56,12 @@ namespace NZCustomsServiceExtension.Actions
             this.markAsExecutable = new CheckBox() { Text = "Mark As Executable" };
 
             this.Controls.Add(
-                new SlimFormField("Artifactory Variable:", this.artifactoryVariable) { HelpText = "Choose a specific artifactory variable, or all artifactory variables in build scope." },
-                new SlimFormField("Item Name:", this.artifactName) { HelpText = "Checking this option means that this action will only log what it would delete, unchecking it will cause the action to actually delete artifacts from Artifactory." },
-                new SlimFormField("Output File:", this.destinationFileName),
-                new SlimFormField("Make Executable:", this.markAsExecutable) { HelpText = "chmod 0755" }
+                new SlimFormField("Artifactory Variable:", this.artifactoryVariable) { HelpText = "Select the previously declared Artifactory Variable that specifies the location of the file you wish to download." },
+                new SlimFormField("Artifact Name:", this.artifactName) { HelpText = "The name of the file you wish to download." },
+                new SlimFormField("Output File:", this.destinationFileName) { HelpText = "The destination, defaults to the working directory plus artifact name." },
+                new SlimFormField("Make Executable:", this.markAsExecutable) { HelpText = "Give the file executable permission (run chmod 0755). Unfortunately permissions are not kept with this method of copy files." }
             );
          
-            //this.artifactoryVariable.Items.Add(new ListItem("(All Artifactory Variables in Build Scope)", ALL_ARTIFACTORY_VARIABLES));
             this.artifactoryVariable.Items.AddRange(ArtifactoryVersionVariable.GetArtifactoryVariablesInBuildScope(this.ApplicationId));
         }
     }

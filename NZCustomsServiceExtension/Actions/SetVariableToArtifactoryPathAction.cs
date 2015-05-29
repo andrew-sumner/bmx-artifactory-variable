@@ -13,6 +13,7 @@ namespace NZCustomsServiceExtension.Actions
     using Inedo.BuildMaster.Data;
     using Inedo.BuildMaster.Extensibility.Actions;
     using Inedo.BuildMaster.Web;
+    using NZCustomsServiceExtension.Variables;
 
     /// <summary>
     /// Populates a variable with the value path to a build in artifactory chosen in selected artifactory variable
@@ -60,7 +61,7 @@ namespace NZCustomsServiceExtension.Actions
         {
             try
             {
-                string version = this.GetVariableValue();
+                string version = ArtifactoryVersionVariable.GetVariableValue(this.Context, this.VariableName).Value_Text;
 
                 var exec = StoredProcs
                         .Builds_GetExecution(this.Context.ExecutionId)
@@ -97,25 +98,7 @@ namespace NZCustomsServiceExtension.Actions
                 this.LogError(ex.Message);
             }
         }
-
-        /// <summary>
-        /// Get the current value of artifactory variable
-        /// </summary>
-        /// <returns>Variable value as string</returns>
-        private string GetVariableValue()
-        {
-            // Check that the version selected is actually valid for the current release
-            var version = StoredProcs.Variables_GetVariableValues(this.Context.EnvironmentId, null, this.Context.ApplicationGroupId, this.Context.ApplicationId,
-                            this.Context.DeployableId, this.Context.ReleaseNumber, this.Context.BuildNumber, this.Context.ExecutionId )
-                    //.BuildExecutionPlanAction_GetVariableValues(this.Context.ExecutionPlanActionId)
-                    .Execute()
-                    .Where(s => s.Variable_Name == this.ArtifactoryVariable)
-                    .FirstOrDefault()
-                    .Value_Text;
-
-            return version;
-        }
-        
+                
         /// <summary>
         /// Gets the artifactory path from the properties and value of the selected artifactory variable
         /// </summary>
