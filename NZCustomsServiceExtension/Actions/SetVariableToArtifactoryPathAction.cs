@@ -75,7 +75,7 @@ namespace NZCustomsServiceExtension.Actions
                                 Server_Id: null, 
                                 ApplicationGroup_Id: this.Context.ApplicationGroupId, 
                                 Application_Id: this.Context.ApplicationId,
-                                Deployable_Id: this.Context.DeployableId,
+                                Deployable_Id: null,
                                 Release_Number: this.Context.ReleaseNumber,
                                 Build_Number: this.Context.BuildNumber,
                                 Execution_Id: this.Context.ExecutionId,
