@@ -20,4 +20,5 @@ Create/Update a variable with the path to the artifactory repository for the sel
 ![Action Group Predicate](Images/set_variable_to_path.png)
 
 ## Cleanup Artifacts from Artifactory (Configuration Screen)
+Will delete unwanted builds/artifacts from artifactory.
 ![Cleanup Artifacts from Artifactory](Images/cleanup_artifacts.png)
