@@ -138,25 +138,25 @@ namespace UnitTests
         public void ExpandRepositoryPathWithValue()
         {
             // Releases Grouped
-            Assert.AreEqual("libs-release-local/mygroup.co.nz/0.1.33", variableReleasesGrouped.ExpandRepositoryPathWithValue("0.1", "0.1", "0.1.33"));
+            Assert.AreEqual("libs-release-local/mygroup.co.nz/0.1.33", variableReleasesGrouped.ExpandRepositoryPathWithVersion("0.1", "0.1", "0.1.33"));
 
             string trim = variableReleasesGrouped.TrimFromPath;
 
             variableReleasesGrouped.TrimFromPath = String.Empty;
 
-            Assert.AreEqual("libs-release-local/mygroup.co.nz/0.1.33", variableReleasesGrouped.ExpandRepositoryPathWithValue("0.1", "0.1", "mygroup.co.nz/0.1.33"));
+            Assert.AreEqual("libs-release-local/mygroup.co.nz/0.1.33", variableReleasesGrouped.ExpandRepositoryPathWithVersion("0.1", "0.1", "mygroup.co.nz/0.1.33"));
 
             variableReleasesGrouped.TrimFromPath = trim;
 
 
             // Release Per Folder
-            Assert.AreEqual("libs-release-local/myapp/0.1/33", variableReleasePerFolder.ExpandRepositoryPathWithValue("0.1", "0.1", "0.1.33"));
+            Assert.AreEqual("libs-release-local/myapp/0.1/33", variableReleasePerFolder.ExpandRepositoryPathWithVersion("0.1", "0.1", "0.1.33"));
 
             trim = variableReleasesGrouped.TrimFromPath;
 
             variableReleasesGrouped.TrimFromPath = "myapp/";
 
-            Assert.AreEqual("libs-release-local/myapp/0.1/33", variableReleasePerFolder.ExpandRepositoryPathWithValue("0.1", "0.1", "0.1.33"));
+            Assert.AreEqual("libs-release-local/myapp/0.1/33", variableReleasePerFolder.ExpandRepositoryPathWithVersion("0.1", "0.1", "0.1.33"));
 
             variableReleasesGrouped.TrimFromPath = trim;
         }

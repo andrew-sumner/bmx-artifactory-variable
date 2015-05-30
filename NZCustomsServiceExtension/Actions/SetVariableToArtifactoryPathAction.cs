@@ -62,80 +62,31 @@ namespace NZCustomsServiceExtension.Actions
             try
             {
                 string version = this.Context.Variables[this.ArtifactoryVariable];
-                
-                var exec = StoredProcs
-                        .Builds_GetExecution(this.Context.ExecutionId)
-                        .Execute()
-                        .First();
-     
-                if (!version.Contains(exec.Release_Number.ToString()) && !version.Contains(exec.Release_Name))
-                {
-                    this.LogError(string.Format("The version '{0}' selected for artifactory variable '{1}' is not valid for this the current release '{2} {3}' ", version, this.ArtifactoryVariable, exec.Release_Number, exec.Release_Name));
-                    return;
-                }
 
-                string path = this.GetArtifactoryVariablePath(version, exec.Release_Number, exec.Release_Name);
+                var variable = ArtifactoryVersionVariable.GetVariableDeclaration(this.Context.ApplicationId, this.ArtifactoryVariable);
+                string path = variable.ExpandRepositoryPathWithVersion(version);
 
                 this.LogInformation(string.Format("Get Artifactory path for selected build '{0}' from {1}'s variable properties", version, this.ArtifactoryVariable));
                 this.LogInformation(string.Format("Set {0}={1}", this.VariableName, path));
 
                 StoredProcs.Variables_CreateOrUpdateVariableDefinition(
-                                this.VariableName, 
-                                exec.Environment_Id, 
-                                null, 
-                                null, 
-                                exec.Application_Id,
-                                null, 
-                                exec.Release_Number, 
-                                exec.Build_Number, 
-                                exec.Execution_Id, 
-                                path,
-                                "N")
-                            .Execute();
+                                Variable_Name: this.VariableName, 
+                                Environment_Id: this.Context.EnvironmentId, 
+                                Server_Id: null, 
+                                ApplicationGroup_Id: this.Context.ApplicationGroupId, 
+                                Application_Id: this.Context.ApplicationId,
+                                Deployable_Id: this.Context.DeployableId,
+                                Release_Number: this.Context.ReleaseNumber,
+                                Build_Number: this.Context.BuildNumber,
+                                Execution_Id: this.Context.ExecutionId,
+                                Value_Text: path,
+                                Sensitive_Indicator: "N"
+                            ).Execute();
             }
             catch (Exception ex)
             {
                 this.LogError(ex.Message);
             }
-        }
-                
-        /// <summary>
-        /// Gets the artifactory path from the properties and value of the selected artifactory variable
-        /// </summary>
-        /// <param name="version">Version selected for the variable</param>
-        /// <returns>Artifactory path</returns>
-        private string GetArtifactoryVariablePath(string version, string releaseNumber, string releaseName)
-        {
-            // Get variable properties
-            var settings = StoredProcs
-                     .Variables_GetVariableDeclarations("B", this.Context.ApplicationId, null)
-                     .Execute()
-                     .Where(s => s.Variable_Name == this.ArtifactoryVariable)
-                     .FirstOrDefault()
-                     .Variable_Configuration;
-
-            XmlDocument xml = new XmlDocument();
-            xml.LoadXml(settings);
-
-            string repositoryPath; 
-            string trimFromPath = xml.SelectSingleNode("//Properties/@TrimFromPath").Value;
-            bool replaceSlashWithDot = bool.Parse(xml.SelectSingleNode("//Properties/@ReplaceSlashWithDot").Value);
-
-            // Reconstruct path to build folder from properties and version selected
-            repositoryPath = trimFromPath + version;
-
-            if (replaceSlashWithDot)
-            {
-                repositoryPath = repositoryPath.Replace(releaseNumber + ".", releaseNumber + "/");
-                repositoryPath = repositoryPath.Replace(releaseName + ".", releaseName + "/");
-            }
-
-            if (repositoryPath.EndsWith("/"))
-            {
-                repositoryPath = repositoryPath.Remove(repositoryPath.Length - 1);
-            }
-
-            return repositoryPath;
         }
     }
 }

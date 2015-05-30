@@ -96,7 +96,14 @@ namespace NZCustomsServiceExtension.Variables
             return RepositoryPath.Contains("%RELNO%") || RepositoryPath.Contains("%RELNAME%");
         }
 
-        internal string ExpandRepositoryPathWithValue(string releaseNumber, string releaseName, string selectedVersion)
+        internal string ExpandRepositoryPathWithVersion(string selectedVersion)
+        {
+            var extract = ExtractReleaseAndBuildNumbers(selectedVersion);
+
+            return ExpandRepositoryPath(extract.ReleaseNameOrNumber, extract.BuildNumber);
+        }
+
+        internal string ExpandRepositoryPathWithVersion(string releaseNumber, string releaseName, string selectedVersion)
         {
             StringBuilder path = new StringBuilder();
             path.Append(ExpandRepositoryPath(releaseNumber, releaseName));
@@ -120,6 +127,20 @@ namespace NZCustomsServiceExtension.Variables
                     value = value.Remove(index, 1).Insert(index, "/");
                 }
             }
+
+            //// Reconstruct path to build folder from properties and version selected
+            //repositoryPath = trimFromPath + version;
+
+            //if (replaceSlashWithDot)
+            //{
+            //    repositoryPath = repositoryPath.Replace(releaseNumber + ".", releaseNumber + "/");
+            //    repositoryPath = repositoryPath.Replace(releaseName + ".", releaseName + "/");
+            //}
+
+            //if (repositoryPath.EndsWith("/"))
+            //{
+            //    repositoryPath = repositoryPath.Remove(repositoryPath.Length - 1);
+            //}
 
             return value;
         }

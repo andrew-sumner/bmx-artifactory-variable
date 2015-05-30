@@ -67,7 +67,7 @@ namespace NZCustomsServiceExtension.Actions
 
             StringBuilder uri = new StringBuilder(config.Server);
 
-            variable.AppendPath(uri, variable.ExpandRepositoryPathWithValue(this.Context.ReleaseNumber, GetReleaseName(), variableValue));
+            variable.AppendPath(uri, variable.ExpandRepositoryPathWithVersion(this.Context.ReleaseNumber, GetReleaseName(), variableValue));
             variable.AppendPath(uri, this.ArtifactName);
 
             var srcFileOps = GetLocalFileOps();
