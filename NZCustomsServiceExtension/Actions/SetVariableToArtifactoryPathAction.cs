@@ -61,8 +61,8 @@ namespace NZCustomsServiceExtension.Actions
         {
             try
             {
-                string version = ArtifactoryVersionVariable.GetVariableValue(this.Context, this.VariableName).Value_Text;
-
+                string version = this.Context.Variables[this.VariableName];
+                
                 var exec = StoredProcs
                         .Builds_GetExecution(this.Context.ExecutionId)
                         .Execute()
