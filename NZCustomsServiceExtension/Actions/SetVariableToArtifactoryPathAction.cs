@@ -61,7 +61,7 @@ namespace NZCustomsServiceExtension.Actions
         {
             try
             {
-                string version = this.Context.Variables[this.VariableName];
+                string version = this.Context.Variables[this.ArtifactoryVariable];
                 
                 var exec = StoredProcs
                         .Builds_GetExecution(this.Context.ExecutionId)
