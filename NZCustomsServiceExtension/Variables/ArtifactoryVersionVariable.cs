@@ -75,6 +75,9 @@ namespace NZCustomsServiceExtension.Variables
         [Persistent]
         public bool DefaultToNotIncluded { get; set; }
 
+        /// <summary>
+        /// Get the Artifactory Server configuration for this Extension
+        /// </summary>
         public ArtifactoryConfigurer GlobalConfig
         {
             get {
@@ -90,12 +93,20 @@ namespace NZCustomsServiceExtension.Variables
             }            
         }
 
-
+        /// <summary>
+        /// Does the path contain %RELNO% or %RELNAME%
+        /// </summary>
+        /// <returns></returns>
         internal bool RepositoryPathRequiresExpanding()
         {
             return RepositoryPath.Contains("%RELNO%") || RepositoryPath.Contains("%RELNAME%");
         }
 
+        /// <summary>
+        /// Get the full atifactory url to the selected folder 
+        /// </summary>
+        /// <param name="selectedVersion"></param>
+        /// <returns></returns>
         internal string GetRepositoryPath(string selectedVersion)
         {
             StringBuilder path = new StringBuilder();
@@ -176,17 +187,6 @@ namespace NZCustomsServiceExtension.Variables
             return trim.ToString();
         }
 
-        internal void AppendPath(StringBuilder path, string section)
-        {
-            section = RemoveSurroundingSlashes(section);
-
-            if (section.Length > 0)
-            {
-                path.Append(path.Length > 0 ? "/" : String.Empty);
-                path.Append(section);
-            }
-        }
-
         private void ExpandVariables(StringBuilder path, string releaseNumber, string releaseName)
         {
             // Format variables
@@ -199,8 +199,17 @@ namespace NZCustomsServiceExtension.Variables
             {
                 path = path.Replace("%RELNAME%", releaseName);
             }
+        }
 
-            //return path;
+        internal void AppendPath(StringBuilder path, string section)
+        {
+            section = RemoveSurroundingSlashes(section);
+
+            if (section.Length > 0)
+            {
+                path.Append(path.Length > 0 ? "/" : String.Empty);
+                path.Append(section);
+            }
         }
 
         private string RemoveSurroundingSlashes(string path)
@@ -215,34 +224,6 @@ namespace NZCustomsServiceExtension.Variables
             if (path.EndsWith("/"))
             {
                 path = path.Remove(path.Length - 1);
-            }
-
-            return path;
-        }
-
-        internal string GetTrimmedPath(string path, string trimFromPath)
-        {
-            if (!string.IsNullOrEmpty(trimFromPath))
-            {
-                if (path.StartsWith(trimFromPath))
-                {
-                    path = path.Substring(trimFromPath.Length);
-                }
-            }
-
-            return path;
-        }
-
-        internal string GetReplaceSlashWithDot(string path, string trimFromPath)
-        {
-            if (this.ReplaceSlashWithDot)
-            {
-                int index = path.LastIndexOf('/');
-
-                if (index > -1)
-                {
-                    path = path.Remove(index, 1).Insert(index, ".");
-                }
             }
 
             return path;
@@ -294,41 +275,14 @@ namespace NZCustomsServiceExtension.Variables
                      .Variable_Configuration;
 
             return (ArtifactoryVersionVariable)Util.Persistence.DeserializeFromPersistedObjectXml(settings);
-
-            //XmlDocument xml = new XmlDocument();
-            //xml.LoadXml(settings);
-
-            //return new ArtifactoryVersionVariable
-            //{
-            //    RepositoryKey = xml.SelectSingleNode("//Properties/@RepositoryKey").Value,
-            //    RepositoryPath = xml.SelectSingleNode("//Properties/@RepositoryPath").Value,
-            //    Filter = xml.SelectSingleNode("//Properties/@Filter").Value,
-            //    TrimFromPath = xml.SelectSingleNode("//Properties/@TrimFromPath").Value,
-            //    ReplaceSlashWithDot = bool.Parse(xml.SelectSingleNode("//Properties/@ReplaceSlashWithDot").Value),
-            //    DefaultToNotIncluded = bool.Parse(xml.SelectSingleNode("//Properties/@DefaultToNotIncluded").Value)
-            //};
         }
 
-        public static ListItem[] GetArtifactoryVariablesInBuildScope(int applicationId)
-        {
-            return StoredProcs
-                    .Variables_GetVariableDeclarations("B", applicationId, null)
-                    .Execute()
-                    .Where(s => s.Variable_Configuration.Contains("NZCustomsServiceExtension.Variables.ArtifactoryVersionVariable"))
-                    .Select(s => new ListItem(s.Variable_Name))
-                    .ToArray();
-        }
-
-        //public static Tables.Variable_Values GetVariableValue(IActionExecutionContext context, string variableName)
-        //{
-        //    return StoredProcs.Variables_GetVariableValues(
-        //        Environment_Id: context.EnvironmentId, Server_Id: null,
-        //        ApplicationGroup_Id: context.ApplicationGroupId, Application_Id: context.ApplicationId,
-        //        Deployable_Id: context.DeployableId,
-        //        Release_Number: context.ReleaseNumber, Build_Number: context.BuildNumber,
-        //        Execution_Id: context.ExecutionId).Execute().FirstOrDefault(v => v.Variable_Name == variableName);
-        //}
-
+        /// <summary>
+        /// Get the value of an ArtifactoryVersionVariable for an execution
+        /// </summary>
+        /// <param name="executionId"></param>
+        /// <param name="variableName"></param>
+        /// <returns></returns>
         public static Tables.Variable_Values GetVariableValue(int executionId, string variableName)
         {
             return StoredProcs.Variables_GetVariableValues(
@@ -337,6 +291,21 @@ namespace NZCustomsServiceExtension.Variables
                         Release_Number: null, Build_Number: null,
                         Execution_Id: executionId
                     ).Execute().FirstOrDefault(v => v.Variable_Name == variableName);
+        }
+
+        /// <summary>
+        /// Get a list of all ArtifactoryVersionVariable in the build scope
+        /// </summary>
+        /// <param name="applicationId"></param>
+        /// <returns></returns>
+        public static ListItem[] GetArtifactoryVariablesInBuildScope(int applicationId)
+        {
+            return StoredProcs
+                    .Variables_GetVariableDeclarations("B", applicationId, null)
+                    .Execute()
+                    .Where(s => s.Variable_Configuration.Contains("NZCustomsServiceExtension.Variables.ArtifactoryVersionVariable"))
+                    .Select(s => new ListItem(s.Variable_Name))
+                    .ToArray();
         }
     }
 

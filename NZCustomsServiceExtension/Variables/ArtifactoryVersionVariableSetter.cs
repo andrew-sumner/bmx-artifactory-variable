@@ -82,13 +82,6 @@ namespace NZCustomsServiceExtension.Variables
                 }
             }
 
-/*            ListItemCollection list = BubbleSortList(this.Items);
-            this.Items.Clear();
-            foreach (var ii in list)
-            {
-                this.Items.Add(ii.ToString());
-            }                    
-            */
             if (this.Items.Count == 1)
             {
                 this.Items.Add(string.Format("<<< No builds found in Artifactory for application id {0} >>>", applicationId));
@@ -182,25 +175,44 @@ namespace NZCustomsServiceExtension.Variables
                 if (child.Folder) {
                     if (string.IsNullOrEmpty(filter) || Regex.IsMatch(child.Uri, filter, RegexOptions.IgnoreCase | RegexOptions.Singleline))
                     {
-                        folders.Add(new ListItem(repositoryPath + child.Uri));
+                        folders.Add(new ListItem(GetDisplayPath(variable, repositoryPath + child.Uri, trimFromPath)));
                     }
                 }
-            }
-
-            // Apply formatting to list items
-            foreach (ListItem folder in folders)
-            {
-                // Format text
-                //folder.Text = artifactPrefix + (artifactPrefix.EndsWith("/") ? "" : "/") + folder.Text;
-
-                folder.Text = variable.GetTrimmedPath(folder.Text, trimFromPath);
-                folder.Text = variable.GetReplaceSlashWithDot(folder.Text, trimFromPath);
             }
 
             return folders.OrderBy(s => ConvertToSortableNumber(s.Value)).ToArray();
         }
 
-        
+
+        /// <summary>
+        /// Format artifact path according rules set for this ArtifactoryVersionVariable
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="trimFromPath"></param>
+        /// <returns></returns>
+        private string GetDisplayPath(ArtifactoryVersionVariable variable, string path, string trimFromPath)
+        {
+            if (!string.IsNullOrEmpty(trimFromPath))
+            {
+                if (path.StartsWith(trimFromPath))
+                {
+                    path = path.Substring(trimFromPath.Length);
+                }
+            }
+
+            if (variable.ReplaceSlashWithDot)
+            {
+                int index = path.LastIndexOf('/');
+
+                if (index > -1)
+                {
+                    path = path.Remove(index, 1).Insert(index, ".");
+                }
+            }
+
+            return path;
+        }
+
         private int ConvertToSortableNumber(String value)
         {
             int result;
