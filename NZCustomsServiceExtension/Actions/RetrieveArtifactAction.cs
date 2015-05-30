@@ -116,17 +116,9 @@ namespace NZCustomsServiceExtension.Actions
             try
             {
                 srcStream = File.Open(srcFileName, FileMode.Open, FileAccess.Read);
-                //srcStream = srcFileOps.OpenFile(srcFileName, FileMode.Open, FileAccess.Read);
                 destStream = destFileOps.OpenFile(destFileName, FileMode.Create, FileAccess.Write);
 
-                const int KB_32 = 32 * 1024;
-                Byte[] buffer = new Byte[KB_32]; 
-                int bytesRead;
-
-                while ((bytesRead = srcStream.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    destStream.Write(buffer, 0, bytesRead);
-                }
+                srcStream.CopyTo(destStream);
             }
             finally
             {

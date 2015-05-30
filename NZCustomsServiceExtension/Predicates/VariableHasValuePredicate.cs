@@ -36,7 +36,6 @@ namespace NZCustomsServiceExtension.Predicates
         /// <returns>True if variable contains a value</returns>
         public override bool Evaluate(IActionExecutionContext context)
         {
-            //TODO ? context.Variables[this.VariableName]
             var variable = ArtifactoryVersionVariable.GetVariableValue(context, this.VariableName);
             
             if (variable == null) return false;

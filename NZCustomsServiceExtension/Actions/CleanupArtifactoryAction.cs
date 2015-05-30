@@ -173,12 +173,7 @@ namespace NZCustomsServiceExtension.Actions
 
                     foreach (var execution in executions)
                     {
-                        //TODO: Call 
-                        CleanupExecutionContext c = new CleanupExecutionContext(this.Context);
-
-                        var variableValue1 = ArtifactoryVersionVariable.GetVariableValue(this.Context, artifactoryVariable);
-                        
-
+                        //TODO: ArtifactoryVersionVariable.GetVariableValue ? 
                         var variableValue = StoredProcs.Variables_GetVariableValues(
                                                 Environment_Id: execution.Environment_Id,
                                                 Server_Id: null,
@@ -376,33 +371,5 @@ namespace NZCustomsServiceExtension.Actions
         public String variableValue { get; set; }
         public String variableReleaseNameOrNumber { get; set; }
         public String variableBuildNumber { get; set; }
-    }
-
-    public class CleanupExecutionContext : IActionExecutionContext {
-        public CleanupExecutionContext(IActionExecutionContext actionBase)
-        {
-            this.CopyProperties(actionBase);
-            
-        }
-
-        private void CopyProperties(object src)
-        {
-            foreach (PropertyDescriptor item in TypeDescriptor.GetProperties(src))
-            {
-                item.SetValue(this, item.GetValue(src));
-            } 
-        }
-
-        public int? ApplicationGroupId { get; set; }
-        public int ApplicationId { get; set; }
-        public string BuildNumber { get; set; }
-        public IActionCancellationToken CancellationToken { get; set; }
-        public int? DeployableId { get; set; }
-        public int EnvironmentId { get; set; }
-        public int ExecutionId { get; set; }
-        public int ExecutionPlanActionId { get; set; }
-        public long NumericReleaseNumber { get; set; }
-        public string ReleaseNumber { get; set; }
-        public IDictionary<string, string> Variables { get; set; }
     }
 }
