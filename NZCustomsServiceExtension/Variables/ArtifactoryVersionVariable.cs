@@ -319,14 +319,24 @@ namespace NZCustomsServiceExtension.Variables
                     .ToArray();
         }
 
-        public static Tables.Variable_Values GetVariableValue(IActionExecutionContext context, string variableName)
+        //public static Tables.Variable_Values GetVariableValue(IActionExecutionContext context, string variableName)
+        //{
+        //    return StoredProcs.Variables_GetVariableValues(
+        //        Environment_Id: context.EnvironmentId, Server_Id: null,
+        //        ApplicationGroup_Id: context.ApplicationGroupId, Application_Id: context.ApplicationId,
+        //        Deployable_Id: context.DeployableId,
+        //        Release_Number: context.ReleaseNumber, Build_Number: context.BuildNumber,
+        //        Execution_Id: context.ExecutionId).Execute().FirstOrDefault(v => v.Variable_Name == variableName);
+        //}
+
+        public static Tables.Variable_Values GetVariableValue(int executionId, string variableName)
         {
             return StoredProcs.Variables_GetVariableValues(
-                Environment_Id: context.EnvironmentId, Server_Id: null,
-                ApplicationGroup_Id: context.ApplicationGroupId, Application_Id: context.ApplicationId,
-                Deployable_Id: context.DeployableId,
-                Release_Number: context.ReleaseNumber, Build_Number: context.BuildNumber,
-                Execution_Id: context.ExecutionId).Execute().FirstOrDefault(v => v.Variable_Name == variableName);
+                        Environment_Id: null, Server_Id: null,
+                        ApplicationGroup_Id: null, Application_Id: null, Deployable_Id: null,
+                        Release_Number: null, Build_Number: null,
+                        Execution_Id: executionId
+                    ).Execute().FirstOrDefault(v => v.Variable_Name == variableName);
         }
     }
 

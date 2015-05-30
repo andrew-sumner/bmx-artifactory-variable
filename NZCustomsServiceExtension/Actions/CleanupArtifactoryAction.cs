@@ -173,19 +173,20 @@ namespace NZCustomsServiceExtension.Actions
 
                     foreach (var execution in executions)
                     {
-                        //TODO: ArtifactoryVersionVariable.GetVariableValue ? 
-                        var variableValue = StoredProcs.Variables_GetVariableValues(
-                                                Environment_Id: execution.Environment_Id,
-                                                Server_Id: null,
-                                                ApplicationGroup_Id: null,
-                                                Application_Id: this.Context.ApplicationId,
-                                                Deployable_Id: null,
-                                                Release_Number: execution.Release_Number,
-                                                Build_Number: execution.Build_Number,
-                                                Execution_Id: execution.Execution_Id)
-                                            .Execute()
-                                            .Where(v => v.Variable_Name.Equals(artifactoryVariable))
-                                            .FirstOrDefault();
+                        var variableValue = ArtifactoryVersionVariable.GetVariableValue(execution.Execution_Id, artifactoryVariable);
+
+                        //var variableValue = StoredProcs.Variables_GetVariableValues(
+                        //                        Environment_Id: execution.Environment_Id,
+                        //                        Server_Id: null,
+                        //                        ApplicationGroup_Id: null,
+                        //                        Application_Id: this.Context.ApplicationId,
+                        //                        Deployable_Id: null,
+                        //                        Release_Number: execution.Release_Number,
+                        //                        Build_Number: execution.Build_Number,
+                        //                        Execution_Id: execution.Execution_Id)
+                        //                    .Execute()
+                        //                    .Where(v => v.Variable_Name.Equals(artifactoryVariable))
+                        //                    .FirstOrDefault();
 
                         if (variableValue != null && !String.IsNullOrEmpty(variableValue.Value_Text))
                         {
