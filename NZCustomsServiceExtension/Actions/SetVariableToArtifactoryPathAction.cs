@@ -61,12 +61,12 @@ namespace NZCustomsServiceExtension.Actions
         {
             try
             {
-                string version = this.Context.Variables[this.ArtifactoryVariable];
+                string selectedVersion = this.Context.Variables[this.ArtifactoryVariable];
 
                 var variable = ArtifactoryVersionVariable.GetVariableDeclaration(this.Context.ApplicationId, this.ArtifactoryVariable);
-                string path = variable.ExpandRepositoryPathWithVersion(version);
+                string path = variable.GetRepositoryPath(selectedVersion);
 
-                this.LogInformation(string.Format("Get Artifactory path for selected build '{0}' from {1}'s variable properties", version, this.ArtifactoryVariable));
+                this.LogInformation(string.Format("Get Artifactory path for selected build '{0}' from {1}'s variable properties", selectedVersion, this.ArtifactoryVariable));
                 this.LogInformation(string.Format("Set {0}={1}", this.VariableName, path));
 
                 StoredProcs.Variables_CreateOrUpdateVariableDefinition(

@@ -63,11 +63,11 @@ namespace NZCustomsServiceExtension.Actions
             ArtifactoryVersionVariable variable = ArtifactoryVersionVariable.GetVariableDeclaration(this.Context.ApplicationId, this.ArtifactoryVariable);
             ArtifactoryConfigurer config = this.GlobalConfig;
 
-            string variableValue = this.Context.Variables[this.ArtifactoryVariable];
+            string selectedVersion = this.Context.Variables[this.ArtifactoryVariable];
 
             StringBuilder uri = new StringBuilder(config.Server);
 
-            variable.AppendPath(uri, variable.ExpandRepositoryPathWithVersion(this.Context.ReleaseNumber, GetReleaseName(), variableValue));
+            variable.AppendPath(uri, variable.GetRepositoryPath(selectedVersion));
             variable.AppendPath(uri, this.ArtifactName);
 
             var srcFileOps = GetLocalFileOps();
@@ -151,15 +151,6 @@ namespace NZCustomsServiceExtension.Actions
             {
                 this.LogWarning("chmod return code indicates error: {0}", chmodRet);
             }
-        }
-
-        private string GetReleaseName()
-        {
-            var execution = StoredProcs
-                     .Builds_GetExecution(this.Context.ExecutionId)
-                     .Execute().FirstOrDefault();
-
-            return execution.Release_Name;
         }
 
         protected IFileOperationsExecuter GetRemoteFileOps()

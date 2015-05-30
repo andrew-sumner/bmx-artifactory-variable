@@ -118,6 +118,7 @@ namespace UnitTests
         {
             Assert.AreEqual("0.1", variableReleasesGrouped.ExpandFilter("0.1", "0.1"));
             Assert.AreEqual(String.Empty, variableReleasePerFolder.ExpandFilter("0.1", "0.1"));
+
         }
 
         [TestMethod]
@@ -135,30 +136,39 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void ExpandRepositoryPathWithValue()
+        public void GetRepositoryPath()
         {
             // Releases Grouped
-            Assert.AreEqual("libs-release-local/mygroup.co.nz/0.1.33", variableReleasesGrouped.ExpandRepositoryPathWithVersion("0.1", "0.1", "0.1.33"));
+            Assert.AreEqual("libs-release-local/mygroup.co.nz/0.1.33", variableReleasesGrouped.GetRepositoryPath("0.1.33"));
 
             string trim = variableReleasesGrouped.TrimFromPath;
 
             variableReleasesGrouped.TrimFromPath = String.Empty;
 
-            Assert.AreEqual("libs-release-local/mygroup.co.nz/0.1.33", variableReleasesGrouped.ExpandRepositoryPathWithVersion("0.1", "0.1", "mygroup.co.nz/0.1.33"));
+            Assert.AreEqual("libs-release-local/mygroup.co.nz/0.1.33", variableReleasesGrouped.GetRepositoryPath("mygroup.co.nz/0.1.33"));
 
             variableReleasesGrouped.TrimFromPath = trim;
 
 
             // Release Per Folder
-            Assert.AreEqual("libs-release-local/myapp/0.1/33", variableReleasePerFolder.ExpandRepositoryPathWithVersion("0.1", "0.1", "0.1.33"));
+            Assert.AreEqual("libs-release-local/myapp/0.1/33", variableReleasePerFolder.GetRepositoryPath("0.1.33"));
 
-            trim = variableReleasesGrouped.TrimFromPath;
+            trim = variableReleasePerFolder.TrimFromPath;
+            bool replace = variableReleasePerFolder.ReplaceSlashWithDot;
 
-            variableReleasesGrouped.TrimFromPath = "myapp/";
+            try
+            {
+                variableReleasePerFolder.TrimFromPath = String.Empty;
+                Assert.AreEqual("libs-release-local/myapp/0.1/33", variableReleasePerFolder.GetRepositoryPath("/myapp/0.1.33"));
 
-            Assert.AreEqual("libs-release-local/myapp/0.1/33", variableReleasePerFolder.ExpandRepositoryPathWithVersion("0.1", "0.1", "0.1.33"));
-
-            variableReleasesGrouped.TrimFromPath = trim;
+                variableReleasePerFolder.ReplaceSlashWithDot = false;
+                Assert.AreEqual("libs-release-local/myapp/0.1/33", variableReleasePerFolder.GetRepositoryPath("/myapp/0.1/33"));
+            }
+            finally
+            {
+                variableReleasePerFolder.TrimFromPath = trim;
+                variableReleasePerFolder.ReplaceSlashWithDot = replace;
+            }
         }
     }
 }

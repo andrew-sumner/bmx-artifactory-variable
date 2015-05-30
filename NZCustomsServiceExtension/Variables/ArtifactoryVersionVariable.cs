@@ -96,26 +96,27 @@ namespace NZCustomsServiceExtension.Variables
             return RepositoryPath.Contains("%RELNO%") || RepositoryPath.Contains("%RELNAME%");
         }
 
-        internal string ExpandRepositoryPathWithVersion(string selectedVersion)
-        {
-            var extract = ExtractReleaseAndBuildNumbers(selectedVersion);
-
-            return ExpandRepositoryPath(extract.ReleaseNameOrNumber, extract.BuildNumber);
-        }
-
-        internal string ExpandRepositoryPathWithVersion(string releaseNumber, string releaseName, string selectedVersion)
+        internal string GetRepositoryPath(string selectedVersion)
         {
             StringBuilder path = new StringBuilder();
-            path.Append(ExpandRepositoryPath(releaseNumber, releaseName));
 
-            String trimFromPath = ExpandTrimFromPath(releaseNumber, releaseName);
-            if (!String.IsNullOrEmpty(trimFromPath) && path.ToString().StartsWith(trimFromPath))
+            // Append repository
+            AppendPath(path, this.RepositoryKey);
+
+            // Append the part of the path that not provided by the selected version
+            int remove = String.IsNullOrEmpty(this.TrimFromPath) ? 0 : this.TrimFromPath.Length;            
+            string repositoryPath = this.RepositoryPath;
+
+            if (remove < this.RepositoryPath.Length)
             {
-                path = new StringBuilder(path.ToString().Substring(0, trimFromPath.Length));
+                repositoryPath = repositoryPath.Remove(remove);
             }
-
+            AppendPath(path, repositoryPath);
+            
+            // Append the selected version
             AppendPath(path, selectedVersion);
 
+            // Replace . with / if required
             string value = path.ToString();
 
             if (this.ReplaceSlashWithDot)
@@ -127,20 +128,6 @@ namespace NZCustomsServiceExtension.Variables
                     value = value.Remove(index, 1).Insert(index, "/");
                 }
             }
-
-            //// Reconstruct path to build folder from properties and version selected
-            //repositoryPath = trimFromPath + version;
-
-            //if (replaceSlashWithDot)
-            //{
-            //    repositoryPath = repositoryPath.Replace(releaseNumber + ".", releaseNumber + "/");
-            //    repositoryPath = repositoryPath.Replace(releaseName + ".", releaseName + "/");
-            //}
-
-            //if (repositoryPath.EndsWith("/"))
-            //{
-            //    repositoryPath = repositoryPath.Remove(repositoryPath.Length - 1);
-            //}
 
             return value;
         }
@@ -265,9 +252,23 @@ namespace NZCustomsServiceExtension.Variables
         {
             ArtifactVersion value = new ArtifactVersion();
 
-            int index = version.LastIndexOf('/');
-            if (index <= 0) index = version.LastIndexOf('.'); 
+            int index = 0;
 
+            int indexSlash = version.LastIndexOf('/');
+            int indexDot = version.LastIndexOf('.');
+
+            if (indexSlash > 0 && indexSlash < indexDot)
+            {
+                version = version.Substring(indexSlash + 1);
+                indexSlash = version.LastIndexOf('/');
+                indexDot = version.LastIndexOf('.');
+            }
+
+            if (indexSlash <= 0)
+            {
+                index = indexDot;
+            }
+            
             if (index > 0)
             {
                 value.ReleaseNameOrNumber = version.Substring(0, index);
