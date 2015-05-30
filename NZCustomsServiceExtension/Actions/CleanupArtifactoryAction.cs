@@ -123,18 +123,21 @@ namespace NZCustomsServiceExtension.Actions
             }
         }
 
-        private void CleanupArtifacts(string ArtifactoryVariable)
+        private void CleanupArtifacts(string artifactoryVariable)
         {
-            this.LogInformation("Gather variable usage from BuildMaster for Artifactory Build Variable {0}", ArtifactoryVariable);
+            this.LogInformation("Gather variable usage from BuildMaster for Artifactory Build Variable {0}", artifactoryVariable);
 
-            List<BuildInfo> builds = GetBuildMasterBuildsToKeep(ArtifactoryVariable);
-            DeleteArtifactsFromArtifactory(ArtifactoryVariable, builds);
+            List<BuildInfo> builds = GetBuildMasterBuildsToKeep(artifactoryVariable);
+            DeleteArtifactsFromArtifactory(artifactoryVariable, builds);
         }
 
-        private List<BuildInfo> GetBuildMasterBuildsToKeep(string ArtifactoryVariable)
+        private List<BuildInfo> GetBuildMasterBuildsToKeep(string artifactoryVariable)
         {
             List<BuildInfo> builds = new List<BuildInfo>();
-            
+            //TODO I can help thinking that it might be simpler just to get the active builds and releases and keep x number of rejected, I'm just concerned
+            // that won't keep the right builds that way.  If using BuildMasters built in clean up rejected builds then possibly could just keep everything 
+            // still recorded in buildmaster?
+
             // 1. Get List of all envrionment for this Application
             //    NOTE: To get these in correct order order we have to query the workflows instead of calling getEnvironments()
             var workflows = StoredProcs.Workflows_GetWorkflows(Application_Id: this.Context.ApplicationId).Execute();
@@ -169,7 +172,9 @@ namespace NZCustomsServiceExtension.Actions
 
                     foreach (var execution in executions)
                     {
-                        //TODO: Call ArtifactoryAction.GetVaribleValue
+                        //TODO: Call 
+                        //var variableValue = ArtifactoryVersionVariable.GetVariableValue(this.Context, artifactoryVariable);
+
                         var variableValue = StoredProcs.Variables_GetVariableValues(
                                                 Environment_Id: execution.Environment_Id,
                                                 Server_Id: null,
@@ -180,7 +185,7 @@ namespace NZCustomsServiceExtension.Actions
                                                 Build_Number: execution.Build_Number,
                                                 Execution_Id: execution.Execution_Id)
                                             .Execute()
-                                            .Where(v => v.Variable_Name.Equals(ArtifactoryVariable))
+                                            .Where(v => v.Variable_Name.Equals(artifactoryVariable))
                                             .FirstOrDefault();
 
                         if (variableValue != null && !String.IsNullOrEmpty(variableValue.Value_Text))
@@ -205,12 +210,6 @@ namespace NZCustomsServiceExtension.Actions
                                         buildInfo.variableReleaseNameOrNumber = version.ReleaseNameOrNumber;
                                         buildInfo.variableBuildNumber = version.BuildNumber;
 
-                                        //buildInfo.releaseNumber = execution.Release_Number;
-                                        //buildInfo.releaseName = execution.Release_Name;
-                                        //buildInfo.buildNumber = execution.Build_Number;
-                                        //buildInfo.buildStatus = execution.BuildStatus_Name;
-                                        //buildInfo.executionStatus = execution.ExecutionStatus_Name;
-
                                         builds.Add(buildInfo);
 
                                         result = "Keep";
@@ -232,7 +231,7 @@ namespace NZCustomsServiceExtension.Actions
                         }
                         else
                         {
-                            this.LogDebug("\tVariable '{0}' was not found for Release {1} Build {2}", ArtifactoryVariable, execution.Release_Number, execution.Build_Number);
+                            this.LogDebug("\tVariable '{0}' was not found for Release {1} Build {2}", artifactoryVariable, execution.Release_Number, execution.Build_Number);
                         }
 
                         // Found all the builds we need for this environment, move on to the next
@@ -373,11 +372,5 @@ namespace NZCustomsServiceExtension.Actions
         public String variableValue { get; set; }
         public String variableReleaseNameOrNumber { get; set; }
         public String variableBuildNumber { get; set; }
-        
-        //public String releaseNumber { get; set; }
-        //public String releaseName { get; set; }
-        //public String buildNumber { get; set; }
-        //public String buildStatus { get; set; }
-        //public String executionStatus { get; set; }
     }
 }
