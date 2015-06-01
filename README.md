@@ -16,7 +16,7 @@ As (Not Selected) is a valid option, this predicate is useful for skipping actio
 ![Action Group Predicate](Images/retrieve_artifact.png)
 
 ## Set Variable to Artifactory Path
-Create/Update a variable with the path to the artifactory repository for the selected build, eg if the build 1.0.33 was selected the variable might get set to a value like this: MYAPP_PATH=libs-release-local/mygroup/myapp/0.1.33
+Create/Update a variable with the path to the artifactory repository for the selected build, eg if the build 1.0.33 was selected the variable might get set to a value like this: MYAPP_PATH=libs-release-local/mygroup/myapp/1.0.33
 ![Action Group Predicate](Images/set_variable_to_path.png)
 
 ## Cleanup Artifacts from Artifactory (Configuration Screen)
