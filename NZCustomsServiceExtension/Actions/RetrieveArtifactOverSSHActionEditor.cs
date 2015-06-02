@@ -11,14 +11,14 @@ using NZCustomsServiceExtension.Variables;
 
 namespace NZCustomsServiceExtension.Actions
 {
-    internal sealed class RetrieveArtifactActionEditor : ActionEditorBase
+    internal sealed class RetrieveArtifactOverSSHActionEditor : ActionEditorBase
     {
         private DropDownList artifactoryVariable;        
         private ValidatingTextBox artifactName;
         private SourceControlFileFolderPicker destinationFileName;
         private CheckBox markAsExecutable;
 
-        public RetrieveArtifactActionEditor()
+        public RetrieveArtifactOverSSHActionEditor()
         {
         }
 
@@ -26,7 +26,7 @@ namespace NZCustomsServiceExtension.Actions
         {
             this.EnsureChildControls();
 
-            var action = (RetrieveArtifactAction)extension;
+            var action = (RetrieveArtifactOverSSHAction)extension;
 
             this.artifactoryVariable.Text = action.ArtifactoryVariable;
             this.artifactName.Text = action.ArtifactName;
@@ -38,7 +38,7 @@ namespace NZCustomsServiceExtension.Actions
         {
             this.EnsureChildControls();
 
-            return new RetrieveArtifactAction
+            return new RetrieveArtifactOverSSHAction
             {
                 ArtifactoryVariable = this.artifactoryVariable.Text,
                 ArtifactName = this.artifactName.Text,

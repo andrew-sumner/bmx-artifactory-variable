@@ -19,8 +19,8 @@ namespace NZCustomsServiceExtension.Actions
     "Retrieve Artifact Over SSH",
     "Retrieves an atifact from an Artifactory repository. Actually downloads to BuildMaster Server and then transfers file.")]
     [Tag("NZCustomsService")]
-    [CustomEditor(typeof(RetrieveArtifactActionEditor))]
-    public class RetrieveArtifactAction : AgentBasedActionBase
+    [CustomEditor(typeof(RetrieveArtifactOverSSHActionEditor))]
+    public class RetrieveArtifactOverSSHAction : AgentBasedActionBase
     {
         [Persistent]
         public string ArtifactoryVariable { get; set; }
@@ -34,7 +34,7 @@ namespace NZCustomsServiceExtension.Actions
         [Persistent]
         public bool MarkAsExecutable { get; set; }
 
-        public RetrieveArtifactAction()
+        public RetrieveArtifactOverSSHAction()
         {
         }
 
