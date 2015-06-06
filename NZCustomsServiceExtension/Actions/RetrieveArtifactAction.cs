@@ -16,8 +16,8 @@ namespace Inedo.BuildMasterExtensions.Artifactory
 {
     [ActionProperties(
     "Retrieve Artifact",
-    "Retrieves an atifact from an Artifactory repository.",
-    "Artifactory")]
+    "Retrieves an atifact from an Artifactory repository.")]
+    [Tag("NZCustomsService")]
     [CustomEditor(typeof(RetrieveArtifactActionEditor))]
     public class RetrieveArtifactAction : RemoteActionBase 
     {
