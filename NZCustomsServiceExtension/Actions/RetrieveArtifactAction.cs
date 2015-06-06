@@ -12,7 +12,7 @@ using Inedo.BuildMaster.Web;
 using NZCustomsServiceExtension;
 using NZCustomsServiceExtension.Variables;
 
-namespace Inedo.BuildMasterExtensions.Artifactory
+namespace NZCustomsServiceExtension.Actions
 {
     [ActionProperties(
     "Retrieve Artifact",
