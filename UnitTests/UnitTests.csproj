@@ -11,11 +11,12 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>UnitTests</RootNamespace>
     <AssemblyName>UnitTests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,6 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,23 +35,35 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BuildMaster.Web.Controls">
-      <HintPath>..\packages\Inedo.BuildMaster.SDK.4.6\lib\net40\BuildMaster.Web.Controls.dll</HintPath>
+    <Reference Include="BuildMaster.Web.Controls, Version=5.3.0.33, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
+      <HintPath>..\packages\Inedo.BuildMaster.SDK.5.3.0\lib\net45\BuildMaster.Web.Controls.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="BuildMasterCore">
-      <HintPath>..\packages\Inedo.BuildMaster.SDK.4.6\lib\net40\BuildMasterCore.dll</HintPath>
+    <Reference Include="BuildMasterCore, Version=5.3.0.33, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
+      <HintPath>..\packages\Inedo.BuildMaster.SDK.5.3.0\lib\net45\BuildMasterCore.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="InedoLib">
-      <HintPath>..\packages\Inedo.BuildMaster.SDK.4.6\lib\net40\InedoLib.dll</HintPath>
+    <Reference Include="Inedo.Agents.Client, Version=420.1.0.0, Culture=neutral, PublicKeyToken=9de986a2f8db80fc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Inedo.BuildMaster.SDK.5.3.0\lib\net45\Inedo.Agents.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Inedo.ExecutionEngine, Version=39.1.0.0, Culture=neutral, PublicKeyToken=68703f0e52007e75, processorArchitecture=MSIL">
+      <HintPath>..\packages\Inedo.BuildMaster.SDK.5.3.0\lib\net45\Inedo.ExecutionEngine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="InedoLib, Version=420.1.0.0, Culture=neutral, PublicKeyToken=112cfb71329714a6, processorArchitecture=MSIL">
+      <HintPath>..\packages\Inedo.BuildMaster.SDK.5.3.0\lib\net45\InedoLib.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="RestSharp, Version=105.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RestSharp.105.1.0\lib\net4\RestSharp.dll</HintPath>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net45\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -73,9 +87,9 @@
     <Compile Include="ArtifactoryApiTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NZCustomsServiceExtension\NZCustomsServiceExtension.csproj">
+    <ProjectReference Include="..\ArtifactoryExtension\ArtifactoryExtension.csproj">
       <Project>{D822A85A-CBB6-4B24-9FCD-DFA4873D6173}</Project>
-      <Name>NZCustomsServiceExtension</Name>
+      <Name>ArtifactoryExtension</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

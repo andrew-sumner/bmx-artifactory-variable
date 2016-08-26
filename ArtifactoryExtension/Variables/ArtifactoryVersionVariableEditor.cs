@@ -1,10 +1,10 @@
 // -----------------------------------------------------------------------
-// <copyright file="ArtifactoryVersionVariableEditor.cs" company="NZ Customs Service">
+// <copyright file="ArtifactoryVersionVariableEditor.cs" company="Inedo">
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace NZCustomsServiceExtension.Variables
+namespace ArtifactoryExtension.Variables
 {
     using System;
     using System.Text.RegularExpressions;
@@ -13,9 +13,9 @@ namespace NZCustomsServiceExtension.Variables
     using Inedo.BuildMaster.Web.Controls;
     using Inedo.BuildMaster.Web.Controls.Extensions;
     using Inedo.Web.Controls;
-    using Inedo.Web.Controls.ButtonLinks;
-    using NZCustomsServiceExtension.Artifactory;
-    using NZCustomsServiceExtension.Artifactory.Domain;
+    //using Inedo.Web.Controls.ButtonLinks;
+    using ArtifactoryExtension.Artifactory;
+    using ArtifactoryExtension.Artifactory.Domain;
     using System.Collections.Generic;
     using Inedo.BuildMaster;
 

@@ -1,9 +1,9 @@
 // -----------------------------------------------------------------------
-// <copyright file="VariableHasValuePredicate.cs" company="NZ Customs Service">
+// <copyright file="VariableHasValuePredicate.cs" company="Inedo">
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
-namespace NZCustomsServiceExtension.Predicates
+namespace ArtifactoryExtension.Predicates
 {
     using Inedo.BuildMaster;
     using Inedo.BuildMaster.Data;
@@ -11,15 +11,17 @@ namespace NZCustomsServiceExtension.Predicates
     using Inedo.BuildMaster.Extensibility.Predicates;
     using Inedo.BuildMaster.Web;
     using System.Linq;
-    using NZCustomsServiceExtension.Variables;
+    using ArtifactoryExtension.Variables;
+    using System.ComponentModel;
+    using Inedo.Documentation;
+    using Inedo.Serialization;
 
     /// <summary>
     /// BuildMaster predicate to check that a variable has a value
     /// </summary>
-    [PredicateProperties(
-        "Artifactory Variable Has Value (NZCustomsService)",
-        "A predicate that tests whether a artifactory variable has a proper value rather than " + ArtifactoryVersionVariableSetter.NotIncluded + ".")]
-    [Tag("NZCustomsService")]
+    [DisplayName("Artifactory Variable Has Value")]
+    [Description("A predicate that tests whether a artifactory variable has a proper value rather than " + ArtifactoryVersionVariableSetter.NotIncluded + ".")]
+    [Tag("Artifactory")]
     [CustomEditor(typeof(VariableHasValuePredicateEditor))]
     public sealed class VariableHasValuePredicate : PredicateBase
     {

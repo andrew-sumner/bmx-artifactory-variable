@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="ArtifactoryVersionVariableTest.cs" company="NZ Customs Service">
+// <copyright file="ArtifactoryVersionVariableTest.cs" company="Inedo">
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -8,7 +8,7 @@ namespace UnitTests
 {
     using System;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using NZCustomsServiceExtension.Variables;
+    using ArtifactoryExtension.Variables;
     using System.IO;
     
     /// <summary>
@@ -55,9 +55,9 @@ namespace UnitTests
         ArtifactoryVersionVariable variableReleasesGrouped = new ArtifactoryVersionVariable
         {
             RepositoryKey = "libs-release-local",
-            RepositoryPath = "mygroup.co.nz",
+            RepositoryPath = "example.com",
             Filter = "%RELNO%",
-            TrimFromPath = "mygroup.co.nz",
+            TrimFromPath = "example.com",
             ReplaceSlashWithDot = false,
             DefaultToNotIncluded = false
         };
@@ -124,14 +124,14 @@ namespace UnitTests
         [TestMethod]
         public void ExpandTrimFromPath()
         {
-            Assert.AreEqual("libs-release-local/mygroup.co.nz", variableReleasesGrouped.ExpandTrimFromPath("0.1", "0.1"));
+            Assert.AreEqual("libs-release-local/example.org", variableReleasesGrouped.ExpandTrimFromPath("0.1", "0.1"));
             Assert.AreEqual("libs-release-local/myapp", variableReleasePerFolder.ExpandTrimFromPath("0.1", "0.1"));
         }
 
         [TestMethod]
         public void ExpandRepositoryPath()
         {
-            Assert.AreEqual("libs-release-local/mygroup.co.nz", variableReleasesGrouped.ExpandRepositoryPath("0.1", "0.1"));
+            Assert.AreEqual("libs-release-local/example.org", variableReleasesGrouped.ExpandRepositoryPath("0.1", "0.1"));
             Assert.AreEqual("libs-release-local/myapp/0.1", variableReleasePerFolder.ExpandRepositoryPath("0.1", "0.1"));
         }
 
@@ -139,13 +139,13 @@ namespace UnitTests
         public void GetRepositoryPath()
         {
             // Releases Grouped
-            Assert.AreEqual("libs-release-local/mygroup.co.nz/0.1.33", variableReleasesGrouped.GetRepositoryPath("0.1.33"));
+            Assert.AreEqual("libs-release-local/example.org/0.1.33", variableReleasesGrouped.GetRepositoryPath("0.1.33"));
 
             string trim = variableReleasesGrouped.TrimFromPath;
 
             variableReleasesGrouped.TrimFromPath = String.Empty;
 
-            Assert.AreEqual("libs-release-local/mygroup.co.nz/0.1.33", variableReleasesGrouped.GetRepositoryPath("mygroup.co.nz/0.1.33"));
+            Assert.AreEqual("libs-release-local/example.org/0.1.33", variableReleasesGrouped.GetRepositoryPath("example.org/0.1.33"));
 
             variableReleasesGrouped.TrimFromPath = trim;
 

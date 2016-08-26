@@ -9,15 +9,18 @@ using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Extensibility.Agents;
 using Inedo.BuildMaster.Web;
-using NZCustomsServiceExtension;
-using NZCustomsServiceExtension.Variables;
+using ArtifactoryExtension;
+using ArtifactoryExtension.Variables;
+using System.ComponentModel;
+using Inedo.Documentation;
+using Inedo.Serialization;
+using Inedo.Agents;
 
-namespace NZCustomsServiceExtension.Actions
+namespace ArtifactoryExtension.Actions
 {
-    [ActionProperties(
-    "Retrieve Artifact",
-    "Retrieves an atifact from an Artifactory repository.")]
-    [Tag("NZCustomsService")]
+    [DisplayName("Retrieve Artifact")]
+    [Description("Retrieves an atifact from an Artifactory repository.")]
+    [Tag("Artifactory")]
     [CustomEditor(typeof(RetrieveArtifactActionEditor))]
     public class RetrieveArtifactAction : RemoteActionBase 
     {
@@ -45,7 +48,7 @@ namespace NZCustomsServiceExtension.Actions
             {
                 if (this.IsConfigurerSettingRequired())
                 {
-                    String message = "The extension 'NZCustomsService' global configuration needs setting.";
+                    String message = "The extension 'Artifactory' global configuration needs setting.";
                     this.LogError(message);
                     throw new Exception(message);
                 }
@@ -75,7 +78,9 @@ namespace NZCustomsServiceExtension.Actions
             
             if (String.IsNullOrEmpty(this.DestinationFileName)) this.DestinationFileName = null;
 
-            string destFileName = destFileOps.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, this.DestinationFileName ?? this.ArtifactName);
+            //TODO test this
+            //string destFileName = destFileOps.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, this.DestinationFileName ?? this.ArtifactName);
+            string destFileName = destFileOps.GetBaseWorkingDirectory();
 
             if (!DownloadFile(config, uri.ToString(), destFileOps, destFileName)) return null;
 

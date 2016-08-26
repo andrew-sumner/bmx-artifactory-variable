@@ -1,9 +1,9 @@
 // -----------------------------------------------------------------------
-// <copyright file="VariableHasValuePredicateEditor.cs" company="NZ Customs Service">
+// <copyright file="VariableHasValuePredicateEditor.cs" company="Inedo">
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
-namespace NZCustomsServiceExtension.Predicates
+namespace ArtifactoryExtension.Predicates
 {
     using System.Web.UI.WebControls;
     using Inedo.BuildMaster;
@@ -14,7 +14,7 @@ namespace NZCustomsServiceExtension.Predicates
     using Inedo.BuildMaster.Web.Controls;
     using Inedo.BuildMaster.Web.Controls.Extensions;
     using Inedo.Web.Controls;
-    using NZCustomsServiceExtension.Variables;
+    using ArtifactoryExtension.Variables;
     using System.Web;
     using System.Linq;
 
@@ -75,8 +75,7 @@ namespace NZCustomsServiceExtension.Predicates
             //Predicates are not directly tied to applications anymore as of v4.3 because of global plans. However, if the plan is in a single application you can get application id as follows:
             if (int.TryParse(HttpContext.Current.Request.QueryString["planActionGroupId"], out id))
             {
-                applicationId = StoredProcs.Plans_GetActionGroup(id)
-                                  .Execute()
+                applicationId = DB.Plans_GetActionGroup(id)
                                   .ActionGroupUsage_Slim
                                   .FirstOrDefault()
                                   .Application_Id;

@@ -1,10 +1,10 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="SetVariableToArtifactoryPathAction.cs" company="NZ Customs Service">
+// <copyright file="SetVariableToArtifactoryPathAction.cs" company="Inedo">
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace NZCustomsServiceExtension.Actions
+namespace ArtifactoryExtension.Actions
 {
     using System;
     using System.Linq;
@@ -17,17 +17,19 @@ namespace NZCustomsServiceExtension.Actions
     using System.Web.UI.WebControls;
     using System.Collections;
     using System.Collections.Generic;
-    using NZCustomsServiceExtension.Artifactory;
-    using NZCustomsServiceExtension.Variables;
-    using NZCustomsServiceExtension.Artifactory.Domain;
+    using ArtifactoryExtension.Artifactory;
+    using ArtifactoryExtension.Variables;
+    using ArtifactoryExtension.Artifactory.Domain;
     using System.Reflection;
+    using Inedo.Serialization;
+    using Inedo.Documentation;
 
     /// <summary>
     /// Populates a variable with the value path to a build in artifactory chosen in selected artifactory variable
     /// </summary>
-    [ActionProperties(
-        "Cleanup Artifacts in Artifiactory", "Deletes artifacts in artifactory for the selected artifactory variable.")]
-    [Tag("NZCustomsService")]
+    [DisplayName("Cleanup Artifacts in Artifiactory")]
+    [Description("Deletes artifacts in artifactory for the selected artifactory variable.")]
+    [Tag("Artifactory")]
     [CustomEditor(typeof(CleanupArtifactoryActionEditor))] 
     public class CleanupArtifactoryAction : ActionBase
     {
@@ -44,7 +46,7 @@ namespace NZCustomsServiceExtension.Actions
             {
                 if (this.IsConfigurerSettingRequired())
                 {
-                    String message = "The extension 'NZCustomsService' global configuration needs setting.";
+                    String message = "The extension 'Artifactory' global configuration needs setting.";
                     this.LogError(message);
                     throw new Exception(message);
                 }
@@ -141,93 +143,100 @@ namespace NZCustomsServiceExtension.Actions
 
             // 1. Get List of all envrionment for this Application
             //    NOTE: To get these in correct order order we have to query the workflows instead of calling getEnvironments()
-            var workflows = StoredProcs.Workflows_GetWorkflows(Application_Id: this.Context.ApplicationId).Execute();
-            bool checkRunningExecutions = true;
-
-            foreach (var workflowItem in workflows)
+            //var workflows = DB.Workflows_GetWorkflows(Application_Id: this.Context.ApplicationId).Execute();
+            var pipelines = DB.Pipelines_GetPipelines(Application_Id: this.Context.ApplicationId);
+            //bool checkRunningExecutions = true;
+                        
+            foreach (var pipelineItem in pipelines)
             {
-                this.LogDebug("Application: {0} - {1}", workflowItem.Single_Application_Id, workflowItem.Single_Application_Name);
-                this.LogDebug("Workflow: {0} - {1}", workflowItem.Workflow_Id, workflowItem.Workflow_Name);
+                this.LogDebug("Application: {0} - {1}", pipelineItem.Application_Id, DB.Applications_GetApplication(pipelineItem.Application_Id).Applications_Extended.First().Application_Name);
+                this.LogDebug("Pipeline: {0} - {1}", pipelineItem.Pipeline_Id, pipelineItem.Pipeline_Name);
 
-                var workflow = StoredProcs.Workflows_GetWorkflow(Workflow_Id: workflowItem.Workflow_Id).Execute();
+                //var workflow = DB.Workflows_GetWorkflow(Workflow_Id: pipeline.Workflow_Id).Execute();
+                //TODO I believe we will need something like this to get a Inedo.BuildMaster.Pipelines.Pipeline object
+                // Unfortunately that class is not available :-(
+                ArtifactoryVersionVariable a = (ArtifactoryVersionVariable)Persistence.DeserializeFromPersistedObjectXml(pipelineItem.Pipeline_Configuration);
 
-                // 2. For each environment get a list of the last 'X' builds and add to a list of of versions to keep.
-                //    NOTE: A build may get reapplied to the same envrionment several times to repair a failed deployment. Treat these as one.
-                foreach (var step in workflow.WorkflowSteps_Extended)
-                {
-                    int keep = (step.Environment_Name == workflow.WorkflowSteps_Extended.Last().Environment_Name ? this.BuildsToKeepFinal : this.BuildsToKeep);
-
-                    this.LogDebug("Keep: {0} builds in environment '{1}'", keep, step.Environment_Name);
-
-                    var executions = StoredProcs.Builds_GetExecutions(Application_Id: this.Context.ApplicationId, Release_Number: null,
-                                Build_Number: null, Environment_Id: step.Environment_Id, Execution_Count: keep * 3).Execute();
-
-
-                    if (checkRunningExecutions)
-                    {
-                        // Get any variables declared in the execution of the current build
-                        var runningExecutions = StoredProcs.Builds_GetExecutionsInProgress(this.Context.ApplicationId).Execute();
-                        executions = runningExecutions.Concat(executions);
-                        checkRunningExecutions = false;
-                    }
-
-                    foreach (var execution in executions)
-                    {
-                        var variableValue = ArtifactoryVersionVariable.GetVariableValue(execution.Execution_Id, artifactoryVariable);
-
-                        if (variableValue != null && !String.IsNullOrEmpty(variableValue.Value_Text))
-                        {
-                            ArtifactVersion version = ArtifactoryVersionVariable.ExtractReleaseAndBuildNumbers(variableValue.Value_Text);
-                            string result = String.Empty;
-
-                            if (executions.FirstOrDefault(it => it.Release_Number == execution.Release_Number && it.Build_Number == execution.Build_Number && it.Execution_Id > execution.Execution_Id) != null)
-                            {
-                                // same build has been deployed to this enviornment more than once, skip this one
-                                result = "Repeated execution, skip";
-                            }
-                            else
-                            {
-                                if (builds.Count() <= keep)
+                /*
+                                // 2. For each environment get a list of the last 'X' builds and add to a list of of versions to keep.
+                                //    NOTE: A build may get reapplied to the same envrionment several times to repair a failed deployment. Treat these as one.
+                                foreach (var step in pipeline)
                                 {
-                                    if (builds.FirstOrDefault(bld => bld.variableReleaseNameOrNumber == version.ReleaseNameOrNumber && bld.variableBuildNumber == version.BuildNumber) == null)
+                                    int keep = (step.Environment_Name == pipeline.WorkflowSteps_Extended.Last().Environment_Name ? this.BuildsToKeepFinal : this.BuildsToKeep);
+
+                                    this.LogDebug("Keep: {0} builds in environment '{1}'", keep, step.Environment_Name);
+
+                                    var executions = DB.Builds_GetExecutions(Application_Id: this.Context.ApplicationId, Release_Number: null,
+                                                Build_Number: null, Environment_Id: step.Environment_Id, Execution_Count: keep * 3);
+
+
+                                    if (checkRunningExecutions)
                                     {
-                                        var buildInfo = new BuildInfo();
-
-                                        buildInfo.variableValue = variableValue.Value_Text;
-                                        buildInfo.variableReleaseNameOrNumber = version.ReleaseNameOrNumber;
-                                        buildInfo.variableBuildNumber = version.BuildNumber;
-
-                                        builds.Add(buildInfo);
-
-                                        result = "Keep";
+                                        // Get any variables declared in the execution of the current build
+                                        var runningExecutions = DB.Builds_GetExecutionsInProgress(this.Context.ApplicationId);
+                                        executions = runningExecutions.Concat(executions);
+                                        checkRunningExecutions = false;
                                     }
-                                    else
+
+                                    foreach (var execution in executions)
                                     {
-                                        result = "Already keeping";
+                                        var variableValue = ArtifactoryVersionVariable.GetVariableValue(execution.Execution_Id, artifactoryVariable);
+
+                                        if (variableValue != null && !String.IsNullOrEmpty(variableValue.Value_Text))
+                                        {
+                                            ArtifactVersion version = ArtifactoryVersionVariable.ExtractReleaseAndBuildNumbers(variableValue.Value_Text);
+                                            string result = String.Empty;
+
+                                            if (executions.FirstOrDefault(it => it.Release_Number == execution.Release_Number && it.Build_Number == execution.Build_Number && it.Execution_Id > execution.Execution_Id) != null)
+                                            {
+                                                // same build has been deployed to this enviornment more than once, skip this one
+                                                result = "Repeated execution, skip";
+                                            }
+                                            else
+                                            {
+                                                if (builds.Count() <= keep)
+                                                {
+                                                    if (builds.FirstOrDefault(bld => bld.variableReleaseNameOrNumber == version.ReleaseNameOrNumber && bld.variableBuildNumber == version.BuildNumber) == null)
+                                                    {
+                                                        var buildInfo = new BuildInfo();
+
+                                                        buildInfo.variableValue = variableValue.Value_Text;
+                                                        buildInfo.variableReleaseNameOrNumber = version.ReleaseNameOrNumber;
+                                                        buildInfo.variableBuildNumber = version.BuildNumber;
+
+                                                        builds.Add(buildInfo);
+
+                                                        result = "Keep";
+                                                    }
+                                                    else
+                                                    {
+                                                        result = "Already keeping";
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    result = "Discard, we've kept all we want";
+                                                }
+                                            }
+
+                                            this.LogDebug("\tVariable {0}='{1}': {2}. Artifactory Release {3} Build {4}, BuildMaster Release {5}, Build {6}",
+                                                    variableValue.Variable_Name, variableValue.Value_Text, result,
+                                                    version.ReleaseNameOrNumber, version.BuildNumber, execution.Release_Number, execution.Build_Number);
+                                        }
+                                        else
+                                        {
+                                            this.LogDebug("\tVariable '{0}' was not found for Release {1} Build {2}", artifactoryVariable, execution.Release_Number, execution.Build_Number);
+                                        }
+
+                                        // Found all the builds we need for this environment, move on to the next
+                                        if (builds.Count() >= keep)
+                                        {
+                                            break;                            
+                                        }
                                     }
                                 }
-                                else
-                                {
-                                    result = "Discard, we've kept all we want";
-                                }
-                            }
 
-                            this.LogDebug("\tVariable {0}='{1}': {2}. Artifactory Release {3} Build {4}, BuildMaster Release {5}, Build {6}",
-                                    variableValue.Variable_Name, variableValue.Value_Text, result,
-                                    version.ReleaseNameOrNumber, version.BuildNumber, execution.Release_Number, execution.Build_Number);
-                        }
-                        else
-                        {
-                            this.LogDebug("\tVariable '{0}' was not found for Release {1} Build {2}", artifactoryVariable, execution.Release_Number, execution.Build_Number);
-                        }
-
-                        // Found all the builds we need for this environment, move on to the next
-                        if (builds.Count() >= keep)
-                        {
-                            break;                            
-                        }
-                    }
-                }
+                */
             }
 
             return builds;

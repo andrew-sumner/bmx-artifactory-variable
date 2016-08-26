@@ -9,16 +9,19 @@ using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Extensibility.Agents;
 using Inedo.BuildMaster.Web;
-using NZCustomsServiceExtension.Variables;
+using ArtifactoryExtension.Variables;
 using System.Threading;
 using Inedo.BuildMaster.Data;
+using Inedo.Serialization;
+using System.ComponentModel;
+using Inedo.Documentation;
+using Inedo.Agents;
 
-namespace NZCustomsServiceExtension.Actions
+namespace ArtifactoryExtension.Actions
 {
-    [ActionProperties(
-    "Retrieve Artifact Over SSH",
-    "Retrieves an atifact from an Artifactory repository. Actually downloads to BuildMaster Server and then transfers file.")]
-    [Tag("NZCustomsService")]
+    [DisplayName("Retrieve Artifact Over SSH")]
+    [Description("Retrieves an atifact from an Artifactory repository. Actually downloads to BuildMaster Server and then transfers file.")]
+    [Tag("Artifactory")]
     [CustomEditor(typeof(RetrieveArtifactOverSSHActionEditor))]
     public class RetrieveArtifactOverSSHAction : AgentBasedActionBase
     {
@@ -49,7 +52,7 @@ namespace NZCustomsServiceExtension.Actions
             {
                 if (this.IsConfigurerSettingRequired())
                 {
-                    String message = "The extension 'NZCustomsService' global configuration needs setting.";
+                    String message = "The extension 'Artifactory' global configuration needs setting.";
                     this.LogError(message);
                     throw new Exception(message);
                 }
@@ -78,7 +81,9 @@ namespace NZCustomsServiceExtension.Actions
             string onlyFileName = Path.GetFileName(this.DestinationFileName ?? this.ArtifactName);
                         
             string srcFileName = srcFileOps.CombinePath(srcFileOps.GetBaseWorkingDirectory(), onlyFileName);
-            string destFileName = destFileOps.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, this.DestinationFileName ?? this.ArtifactName);
+            //TODO test this
+            //string destFileName = destFileOps.GetWorkingDirectory(this.Context.ApplicationId, this.Context.DeployableId ?? 0, this.DestinationFileName ?? this.ArtifactName);
+            string destFileName = destFileOps.GetBaseWorkingDirectory();
 
             if (!DownloadFile(config, uri.ToString(), srcFileOps, srcFileName)) return;
             TransferFile(srcFileOps, srcFileName, destFileOps, destFileName);

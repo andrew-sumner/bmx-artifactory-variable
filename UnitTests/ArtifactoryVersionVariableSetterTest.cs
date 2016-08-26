@@ -1,5 +1,5 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="ArtifactoryVersionVariableSetterTest.cs" company="NZ Customs Service">
+// <copyright file="ArtifactoryVersionVariableSetterTest.cs" company="Inedo">
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
@@ -11,7 +11,7 @@ namespace UnitTests
     using Inedo.BuildMaster.Extensibility.Variables;
     using Inedo.BuildMaster.Web.Controls.Extensions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using NZCustomsServiceExtension.Variables;
+    using ArtifactoryExtension.Variables;
     
     /// <summary>
     /// This is a test class for ArtifactoryVersionVariableSetterTest and is intended
@@ -93,7 +93,7 @@ namespace UnitTests
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
                 //ActionServer = "http://artifactory:8081/artifactory",
-                RepositoryPath = "libs-release-local/nz.govt.customs/MiddlewareJBMSInterface"
+                RepositoryPath = "libs-release-local/org.example/MiddlewareJBMSInterface"
             };
 
             string releaseNumber = "1.1";
@@ -107,7 +107,7 @@ namespace UnitTests
             Assert.IsTrue(specificRelease.Length > 0, "Expect folders for release " + releaseNumber);
          
             Assert.AreNotEqual(allReleases.Length, specificRelease.Length, "Expect that all releases return more builds than specific release");
-            Assert.IsTrue(specificRelease[0].Text.StartsWith("libs-release-local/nz.govt.customs/MiddlewareJBMSInterface/" + releaseNumber), "Showing full path to artifact");
+            Assert.IsTrue(specificRelease[0].Text.StartsWith("libs-release-local/org.example/MiddlewareJBMSInterface/" + releaseNumber), "Showing full path to artifact");
         }
 
         /// <summary>
@@ -340,8 +340,8 @@ namespace UnitTests
             ArtifactoryVersionVariable variable = new ArtifactoryVersionVariable
             {
                 //ActionServer = "http://artifactory:8081/artifactory",
-                RepositoryPath = "libs-release-local/nz/govt/customs/WebBMS/",
-                TrimFromPath = "libs-release-local/nz/govt/customs/WebBMS/"
+                RepositoryPath = "libs-release-local/org/example/application/",
+                TrimFromPath = "libs-release-local/org/example/application/"
             };
 
             string releaseNumber = "9.4.0";

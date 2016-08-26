@@ -1,10 +1,10 @@
 // -----------------------------------------------------------------------
-// <copyright file="ArtifactoryVersionVariableSetter.cs" company="NZ Customs Service">
+// <copyright file="ArtifactoryVersionVariableSetter.cs" company="Inedo">
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace NZCustomsServiceExtension.Variables
+namespace ArtifactoryExtension.Variables
 {
     using System;
     using System.Collections.Generic;
@@ -16,8 +16,8 @@ namespace NZCustomsServiceExtension.Variables
     using System.Web.UI.WebControls;
     using Inedo.BuildMaster.Data;
     using Inedo.BuildMaster.Web.Controls.Extensions;
-    using NZCustomsServiceExtension.Artifactory;
-    using NZCustomsServiceExtension.Artifactory.Domain;
+    using ArtifactoryExtension.Artifactory;
+    using ArtifactoryExtension.Artifactory.Domain;
     using Inedo.BuildMaster;
 
     /// <summary>
@@ -58,9 +58,8 @@ namespace NZCustomsServiceExtension.Variables
             int applicationId = GetApplicationIdFromUrl();
             
             // Get a list of all active releases for the specified appliation
-            var releases = StoredProcs
+            var releases = DB
                             .Releases_GetReleases(applicationId, null, null)
-                            .Execute()
                             .Where(s => s.ReleaseStatus_Name == "Active")
                             .OrderBy(s => s.Release_Sequence)
                             .Select(s => new { s.Release_Number, s.Release_Name }).ToArray();

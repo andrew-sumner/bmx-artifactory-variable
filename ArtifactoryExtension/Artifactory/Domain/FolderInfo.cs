@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NZCustomsServiceExtension.Artifactory.Domain
+namespace ArtifactoryExtension.Artifactory.Domain
 {
     public class FolderInfo
     {

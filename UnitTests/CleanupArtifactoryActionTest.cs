@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NZCustomsServiceExtension.Actions;
+using ArtifactoryExtension.Actions;
 using Inedo.BuildMaster.Extensibility.Actions.Testing;
 using Inedo.BuildMaster.Data;
 

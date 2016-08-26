@@ -7,9 +7,9 @@ using Inedo.BuildMaster.Extensibility.Actions;
 using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
 using Inedo.Web.Controls;
-using NZCustomsServiceExtension.Variables;
+using ArtifactoryExtension.Variables;
 
-namespace NZCustomsServiceExtension.Actions
+namespace ArtifactoryExtension.Actions
 {
     internal sealed class RetrieveArtifactActionEditor : ActionEditorBase 
     {

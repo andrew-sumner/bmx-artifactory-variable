@@ -1,10 +1,10 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="SetVariableToArtifactoryPathAction.cs" company="NZ Customs Service">
+// <copyright file="SetVariableToArtifactoryPathAction.cs" company="Inedo">
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace NZCustomsServiceExtension.Actions
+namespace ArtifactoryExtension.Actions
 {
     using System;
     using System.Linq;
@@ -13,14 +13,18 @@ namespace NZCustomsServiceExtension.Actions
     using Inedo.BuildMaster.Data;
     using Inedo.BuildMaster.Extensibility.Actions;
     using Inedo.BuildMaster.Web;
-    using NZCustomsServiceExtension.Variables;
+    using ArtifactoryExtension.Variables;
+    using Inedo.Serialization;
+    using System.ComponentModel;
+    using Inedo.Documentation;
+    using Inedo.Data;
 
     /// <summary>
     /// Populates a variable with the value path to a build in artifactory chosen in selected artifactory variable
     /// </summary>
-    [ActionProperties(
-        "Set Variable to Artifiactory Path", "Changes the value on an existing variable or creates a runtime variable with the path to the build folder in artifactory as determined by the selected artifactory variable and its properties.")]
-    [Tag("NZCustomsService")]
+    [DisplayName("Set Variable to Artifiactory Path")]
+    [Description("Changes the value on an existing variable or creates a runtime variable with the path to the build folder in artifactory as determined by the selected artifactory variable and its properties.")]
+    [Tag("Artifactory")]
     [CustomEditor(typeof(SetVariableToArtifactoryPathActionEditor))] 
     public class SetVariableToArtifactoryPathAction : ActionBase
     {
@@ -69,19 +73,22 @@ namespace NZCustomsServiceExtension.Actions
                 this.LogInformation(string.Format("Get Artifactory path for selected build '{0}' from {1}'s variable properties", selectedVersion, this.ArtifactoryVariable));
                 this.LogInformation(string.Format("Set {0}={1}", this.VariableName, path));
 
-                StoredProcs.Variables_CreateOrUpdateVariableDefinition(
-                                Variable_Name: this.VariableName, 
-                                Environment_Id: this.Context.EnvironmentId, 
-                                Server_Id: null, 
-                                ApplicationGroup_Id: this.Context.ApplicationGroupId, 
+                DB.Variables_CreateOrUpdateVariableDefinition(
+                                Variable_Name: this.VariableName,
+                                Environment_Id: this.Context.EnvironmentId,
+                                ServerRole_Id: null,
+                                Server_Id: null,
+                                ApplicationGroup_Id: this.Context.ApplicationGroupId,
                                 Application_Id: this.Context.ApplicationId,
                                 Deployable_Id: null,
                                 Release_Number: this.Context.ReleaseNumber,
                                 Build_Number: this.Context.BuildNumber,
+                                Promotion_Id: this.Context.PromotionId,
                                 Execution_Id: this.Context.ExecutionId,
                                 Value_Text: path,
-                                Sensitive_Indicator: "N"
-                            ).Execute();
+                                Sensitive_Indicator: YNIndicator.No
+                            );
+                        //.Execute();
             }
             catch (Exception ex)
             {

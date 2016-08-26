@@ -1,11 +1,12 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="MockActionExecutionContext.cs" company="NZ Customs Service">
+// <copyright file="MockActionExecutionContext.cs" company="Inedo">
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
 
 namespace UnitTests
 {
+    using System;
     using Inedo.BuildMaster.Extensibility.Actions;
 
     /// <summary>
@@ -68,5 +69,13 @@ namespace UnitTests
         /// Gets or sets value for interface
         /// </summary>
         public IActionCancellationToken CancellationToken { get; set; }
+
+        public int PromotionId
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 }

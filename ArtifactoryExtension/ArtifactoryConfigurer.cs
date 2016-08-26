@@ -1,10 +1,11 @@
 ﻿using Inedo.BuildMaster;
 using Inedo.BuildMaster.Extensibility.Configurers.Extension;
 using Inedo.BuildMaster.Web;
+using Inedo.Serialization;
 
-[assembly: ExtensionConfigurer(typeof(NZCustomsServiceExtension.ArtifactoryConfigurer))]
+[assembly: ExtensionConfigurer(typeof(ArtifactoryExtension.ArtifactoryConfigurer))]
 
-namespace NZCustomsServiceExtension
+namespace ArtifactoryExtension
 {
 
     [CustomEditor(typeof(ArtifactoryConfigurerEditor))]

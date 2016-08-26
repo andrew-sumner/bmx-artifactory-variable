@@ -1,10 +1,10 @@
 ﻿// -----------------------------------------------------------------------
-// <copyright file="SetVariableToArtifactoryPathActionEditor.cs" company="NZ Customs Service">
+// <copyright file="SetVariableToArtifactoryPathActionEditor.cs" company="Inedo">
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace NZCustomsServiceExtension.Actions
+namespace ArtifactoryExtension.Actions
 {
     using System.Linq;
     using System.Web.UI.WebControls;
@@ -15,7 +15,7 @@ namespace NZCustomsServiceExtension.Actions
     using Inedo.Web.Controls;
     using System.Web.UI;
     using System;
-    using NZCustomsServiceExtension.Variables;
+    using ArtifactoryExtension.Variables;
         
     /// <summary>
     /// Editor for <see cref="CleanupArtifactoryAction"/> 

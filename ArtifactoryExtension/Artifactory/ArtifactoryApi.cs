@@ -1,12 +1,13 @@
 ﻿using Newtonsoft.Json;
-using NZCustomsServiceExtension.Artifactory.Domain;
+using ArtifactoryExtension.Artifactory.Domain;
 using RestSharp;
+using RestSharp.Authenticators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace NZCustomsServiceExtension.Artifactory
+namespace ArtifactoryExtension.Artifactory
 {
     public class ArtifactoryApi
     {

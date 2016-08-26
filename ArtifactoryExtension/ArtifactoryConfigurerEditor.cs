@@ -5,7 +5,7 @@ using Inedo.BuildMaster.Web.Controls;
 using Inedo.BuildMaster.Web.Controls.Extensions;
 using Inedo.Web.Controls;
 
-namespace NZCustomsServiceExtension
+namespace ArtifactoryExtension
 {
     internal sealed class ArtifactoryConfigurerEditor : ExtensionConfigurerEditorBase
     {

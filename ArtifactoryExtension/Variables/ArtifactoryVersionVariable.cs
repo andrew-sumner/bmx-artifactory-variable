@@ -1,32 +1,27 @@
 // -----------------------------------------------------------------------
-// <copyright file="ArtifactoryVersionVariable.cs" company="NZ Customs Service">
+// <copyright file="ArtifactoryVersionVariable.cs" company="Inedo">
 // TODO: Update copyright text.
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace NZCustomsServiceExtension.Variables
+namespace ArtifactoryExtension.Variables
 {
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Runtime.CompilerServices;
-    using System.Xml;
     using Inedo.BuildMaster;
     using Inedo.BuildMaster.Data;
     using Inedo.BuildMaster.Extensibility.Variables;
     using Inedo.BuildMaster.Web;
     using System;
-    using System.Collections.Generic;
     using System.Web.UI.WebControls;
     using System.Text;
-    using Inedo.BuildMaster.Data.StoredProcedures;
-    using Inedo.BuildMaster.Extensibility.Actions;
+    using Inedo.Serialization;
+    using System.ComponentModel;
 
     /// <summary>
     /// Artifactory build variable.  Allows selection of a specific build in Artifactory.
     /// </summary>
-    [VariableProperties(
-        "Artifactory Build Variable (NZCustomsService)",
-        "Variable that represents a deployable found in artifactory, uses api artifactories storage to display a list of folders from a particular location in artifactory.")]
+    [DisplayName("Artifactory Build Variable")]
+    [Description("Variable that represents a deployable found in artifactory, uses api artifactories storage to display a list of folders from a particular location in artifactory.")]
     [CustomEditor(typeof(ArtifactoryVersionVariableEditor))]
     [CustomSetter(typeof(ArtifactoryVersionVariableSetter))]
     public sealed class ArtifactoryVersionVariable : VariableBase
@@ -85,7 +80,7 @@ namespace NZCustomsServiceExtension.Variables
             
                 if (configurer == null)
                 {
-                    String message = "The extension 'NZCustomsService' global configuration needs setting.";
+                    String message = "The extension 'Artifactory' global configuration needs setting.";
                     throw new Exception(message);
                 }
 
@@ -145,7 +140,7 @@ namespace NZCustomsServiceExtension.Variables
 
         /// <summary>
         /// Gets the RepositoryPath (without BaseURL) based on the settings configured for this variable
-        /// in the format libs-release-local/nz.govt.customs/SmartViewer - with any %RELNO% or %RELNAME% 
+        /// in the format libs-release-local/org.example/SmartViewer - with any %RELNO% or %RELNAME% 
         /// replaced with actual values
         /// </summary>
         internal string ExpandRepositoryPath(string releaseNumber, string releaseName)
@@ -267,14 +262,13 @@ namespace NZCustomsServiceExtension.Variables
         internal static ArtifactoryVersionVariable GetVariableDeclaration(int applicationId, string artifactoryVariableName)
         {
             // Get variable properties
-            var settings = StoredProcs
-                     .Variables_GetVariableDeclarations("B", applicationId, null)
-                     .Execute()
+            var settings = DB.Variables_GetVariableDeclarations("B", applicationId, null, null)
+                     //.Execute()
                      .Where(s => s.Variable_Name == artifactoryVariableName)
                      .FirstOrDefault()
                      .Variable_Configuration;
 
-            return (ArtifactoryVersionVariable)Util.Persistence.DeserializeFromPersistedObjectXml(settings);
+            return (ArtifactoryVersionVariable)Persistence.DeserializeFromPersistedObjectXml(settings);
         }
 
         /// <summary>
@@ -285,12 +279,20 @@ namespace NZCustomsServiceExtension.Variables
         /// <returns></returns>
         public static Tables.Variable_Values GetVariableValue(int executionId, string variableName)
         {
-            return StoredProcs.Variables_GetVariableValues(
-                        Environment_Id: null, Server_Id: null,
-                        ApplicationGroup_Id: null, Application_Id: null, Deployable_Id: null,
-                        Release_Number: null, Build_Number: null,
+            return DB.Variables_GetVariableValues(
+                        Environment_Id: null,
+                        ServerRole_Id: null,
+                        Server_Id: null,
+                        ApplicationGroup_Id: null, 
+                        Application_Id: null, 
+                        Deployable_Id: null,
+                        Release_Number: null, 
+                        Build_Number: null,
+                        Promotion_Id: null,
                         Execution_Id: executionId
-                    ).Execute().FirstOrDefault(v => v.Variable_Name == variableName);
+                    )
+                    //.Execute()
+                    .FirstOrDefault(v => v.Variable_Name == variableName);
         }
 
         /// <summary>
@@ -300,10 +302,10 @@ namespace NZCustomsServiceExtension.Variables
         /// <returns></returns>
         public static ListItem[] GetArtifactoryVariablesInBuildScope(int applicationId)
         {
-            return StoredProcs
-                    .Variables_GetVariableDeclarations("B", applicationId, null)
-                    .Execute()
-                    .Where(s => s.Variable_Configuration.Contains("NZCustomsServiceExtension.Variables.ArtifactoryVersionVariable"))
+            return DB
+                    .Variables_GetVariableDeclarations("B", applicationId, null, null)
+                    //.Execute()
+                    .Where(s => s.Variable_Configuration.Contains("ArtifactoryExtension.Variables.ArtifactoryVersionVariable"))
                     .Select(s => new ListItem(s.Variable_Name))
                     .ToArray();
         }

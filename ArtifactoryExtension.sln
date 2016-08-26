@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NZCustomsServiceExtension", "NZCustomsServiceExtension\NZCustomsServiceExtension.csproj", "{D822A85A-CBB6-4B24-9FCD-DFA4873D6173}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtifactoryExtension", "ArtifactoryExtension\ArtifactoryExtension.csproj", "{D822A85A-CBB6-4B24-9FCD-DFA4873D6173}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D4462DE3-93D5-4FC9-AA40-1D4B4258D03F}"
 	ProjectSection(SolutionItems) = preProject
@@ -15,8 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D4462D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{90BF0447-9A13-4271-BF27-D3C7F8CA071C}"
 	ProjectSection(SolutionItems) = preProject
+		ArtifactoryExtension.vsmdi = ArtifactoryExtension.vsmdi
 		Local.testsettings = Local.testsettings
-		NZCustomsServiceExtension.vsmdi = NZCustomsServiceExtension.vsmdi
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
@@ -44,15 +44,15 @@ Global
 		Manager = AnkhSVN - Subversion Support for Visual Studio
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = NZCustomsServiceExtension.vsmdi
+		CategoryFile = ArtifactoryExtension.vsmdi
 	EndGlobalSection
 	GlobalSection(VaultVsipSolution-v2) = preSolution
 		VaultHost = http://inedoappsv1/VaultService
 		VaultRepositoryID = 10
 		VaultRepositoryGUID = 4ad214d2-6c2d-48e2-b90e-46c31af253cf
 		ProjectCount = 3
-		ProjectRelativeDiskPath1 = NZCustomsServiceExtension\NZCustomsServiceExtension.csproj
-		ProjectRelativeDiskPath2 = NZCustomsServiceExtension.sln
-		ProjectRelativeDiskPath3 = NZCustomsServiceExtension.sln
+		ProjectRelativeDiskPath1 = ArtifactoryExtension\ArtifactoryExtension.csproj
+		ProjectRelativeDiskPath2 = ArtifactoryExtension.sln
+		ProjectRelativeDiskPath3 = ArtifactoryExtension.sln
 	EndGlobalSection
 EndGlobal
